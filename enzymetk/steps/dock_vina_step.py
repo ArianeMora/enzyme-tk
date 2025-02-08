@@ -1,9 +1,6 @@
 from step import Step
 import pandas as pd
-from tempfile import TemporaryDirectory
-import pickle
 from docko.docko import *
-from pathlib import Path
 import logging
 import numpy as np
 import os

@@ -3,6 +3,10 @@
 git clone https://github.com/RosettaCommons/RFdiffusion.git
 cd RFdiffusion
 conda env create -f env/SE3nv.yml
+# Doesn't like working with conda init
+CONDA_BASE=$(conda info --base)
+source $CONDA_BASE/etc/profile.d/conda.sh
+
 conda activate SE3nv
 cd env/SE3Transformer
 pip install --no-cache-dir -r requirements.txt

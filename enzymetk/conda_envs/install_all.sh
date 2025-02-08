@@ -8,4 +8,4 @@
 ./proteinfer.sh
 ./rfdiffusion.sh
 ./docko.sh
-
+./rxnfp.sh

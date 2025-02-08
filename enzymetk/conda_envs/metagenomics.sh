@@ -1,8 +1,12 @@
 #!/bin/bash
 # Metagenomics
 conda create -n metagenomics -c conda-forge python=3.10.14 -y
-conda install -c conda-forge -c bioconda -c defaults prokka
-conda install -c conda-forge -c bioconda mmseqs2
+# Doesn't like working with conda init
+CONDA_BASE=$(conda info --base)
+source $CONDA_BASE/etc/profile.d/conda.sh
+conda activate metagenomics
+conda install -c conda-forge -c bioconda -c defaults prokka -y
+conda install -c conda-forge -c bioconda mmseqs2 -y
 git clone https://github.com/rrwick/Porechop.git
 # Also install porechop
 cd Porechop

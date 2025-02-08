@@ -1,0 +1,8 @@
+scipy
+pandas
+seaborn
+drfp
+openai
+numpy
+tqdm
+typer

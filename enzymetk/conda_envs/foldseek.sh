@@ -1,3 +1,4 @@
 #!/bin/bash
 # Foldseek
-conda install -c conda-forge -c bioconda foldseek
+conda activate enzymetk
+conda install -c conda-forge -c bioconda foldseek -y

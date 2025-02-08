@@ -10,6 +10,8 @@ make
 ./porechop-runner.py -h
 # Add to path I guess
 echo export PATH=$PATH:$PWD >> ~/.bashrc 
+# Move back one before getting sratoolkit
+cd ..
 # Sratoolkit
 wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/3.1.1/sratoolkit.3.1.1-ubuntu64.tar.gz
 tar -vxzf sratoolkit.3.1.1-ubuntu64.tar.gz

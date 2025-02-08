@@ -1,0 +1,11 @@
+fair-esm
+scikit-learn
+numpy
+seaborn
+sciutil
+pandas
+biopython
+sentence_transformers
+pubchempy
+pyfaidx
+spacy

@@ -7,5 +7,5 @@
 ./conda_envs/metagenomics.sh
 ./conda_envs/proteinfer.sh
 ./conda_envs/rfdiffusion.sh
-./conda_envs/vina.sh
+./conda_envs/docko.sh
 

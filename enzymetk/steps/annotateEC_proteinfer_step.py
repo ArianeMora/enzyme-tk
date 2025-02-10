@@ -10,7 +10,8 @@ import subprocess
 class ProteInfer(Step):
     
     def __init__(self, id_col: str, seq_col: str, proteinfer_dir: str, num_threads: int = 1, 
-                 ec1_filter: list = None, ec2_filter: list = None, ec3_filter: list = None, ec4_filter: list = None):
+                 ec1_filter: list = None, ec2_filter: list = None, ec3_filter: list = None, ec4_filter: list = None, 
+                 env_name: str = 'proteinfer', args: list = None):
         """Initialize the CLEAN step for enzyme classification.
         
         Filters are lists of strings which are the EC values to keep. If None then keep all EC values.
@@ -41,6 +42,8 @@ class ProteInfer(Step):
         - data/inputs/ : Directory for temporary fasta files
         - results/inputs/ : Directory where CLEAN outputs results
         """
+        self.env_name = env_name
+        self.args = args
         self.id_col = id_col
         self.proteinfer_dir = proteinfer_dir
         self.seq_col = seq_col # This is the column which has the sequence in it 
@@ -63,10 +66,13 @@ class ProteInfer(Step):
                 fout.write(f'>{entry.strip()}\n{seq.strip()}\n')
         
         os.chdir(self.proteinfer_dir)
-        cmd = ['conda', 'run', '-n', 'proteinfer', 'python3', 
+        cmd = ['conda', 'run', '-n', self.env_name, 'python3', 
                 f'{self.proteinfer_dir}proteinfer.py',
                 '-i', input_filename,
                 '-o', output_filename]
+        if self.args is not None:
+            # Add the args to the command
+            cmd.extend(self.args)
         subprocess.run(cmd, check=True)
         df = pd.read_csv(output_filename, sep='\t')
         return df

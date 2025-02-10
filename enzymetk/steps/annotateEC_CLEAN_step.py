@@ -18,7 +18,10 @@ import string
 class CLEAN(Step):
     
     def __init__(self, id_col: str, seq_col: str, clean_dir: str, num_threads: int = 1, 
-                 ec1_filter: list = None, ec2_filter: list = None, ec3_filter: list = None, ec4_filter: list = None):
+                 ec1_filter: list = None, ec2_filter: list = None, ec3_filter: list = None, ec4_filter: list = None, 
+                 env_name: str = 'clean', args: list = None):
+        self.env_name = env_name
+        self.args = args
         self.id_col = id_col
         self.clean_dir = clean_dir
         self.seq_col = seq_col # This is the column which has the sequence in it 
@@ -61,7 +64,6 @@ class CLEAN(Step):
         # Make sure in the directory of proteinfer
         # Create the fasta file based on the id and the sequence value columns
         tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
-
         input_filename = f'{tmp_dir}CLEAN_{tmp_label}.fasta'
         
         # write fasta file which is the input for proteinfer
@@ -76,8 +78,12 @@ class CLEAN(Step):
         # Need to first copy the data to the CLEAN folder because it's stupid
         subprocess.run(['cp',  input_filename, f'{self.clean_dir}data/inputs/{tmp_label}.fasta'], check=True)
         # Run clean with clean environment
-        subprocess.run(['conda', 'run', '-n', 'clean', 'python3', f'{self.clean_dir}CLEAN_infer_fasta.py', 
-                        '--fasta_data', tmp_label], check=True)
+        cmd = ['conda', 'run', '-n', self.env_name, 'python3', f'{self.clean_dir}CLEAN_infer_fasta.py', 
+                        '--fasta_data', tmp_label]
+        if self.args is not None:
+            # Add the args to the command
+            cmd.extend(self.args)
+        subprocess.run(cmd, check=True)
         # Copy across the results file
         df = pd.read_csv(f'{self.clean_dir}results/inputs/{tmp_label}_maxsep.csv', header=None, sep='\t')
         # Clean up

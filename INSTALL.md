@@ -13,7 +13,7 @@ If you get a permission denied you may have to run the following:
 chmod a+x enzymetk/conda_envs/*.sh 
 ```
 
-If you don't have a GPU you'll need to change the versions for some of the specific tools e.g. RFdiffusion etc.
+If you don't ha ve a GPU you'll need to change the versions for some of the specific tools e.g. RFdiffusion etc.
 
 If any of the specific environments fail to install you can just manually  install each environment yourself, these are in the conda_envs foler.
 

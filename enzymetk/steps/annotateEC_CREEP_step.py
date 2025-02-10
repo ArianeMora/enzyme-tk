@@ -26,39 +26,43 @@ os.system(f'python downstream_retrieval.py --pretrained_folder=CREEP/$OUTPUT_DIR
     
 class CREEP(Step):
     
-    def __init__(self, id_col: str, value_col: str, CREEP_dir: str, CREEP_cache_dir: str, modality: str, reference_modality: str):
+    def __init__(self, id_col: str, value_col: str, CREEP_dir: str, CREEP_cache_dir: str, modality: str, reference_modality: str, 
+                 env_name: str = 'CREEP', args_extract: list = None, args_retrieval: list = None):
+        self.env_name = env_name
         self.id_col = id_col
         self.value_col = value_col  
         self.modality = modality
         self.reference_modality = reference_modality
         self.CREEP_dir = CREEP_dir
         self.CREEP_cache_dir = CREEP_cache_dir
-
+        self.args_extract = args_extract
+        self.args_retrieval = args_retrieval
             
     def __execute(self, df: pd.DataFrame, tmp_dir: str) -> pd.DataFrame:
         tmp_dir = '/disk1/ariane/vscode/degradeo/pipeline/tmp/'
         input_filename = f'{tmp_dir}/creep.csv'
         df.to_csv(input_filename, index=False)
-        
-        # Might have an issue if the things are not correctly installed in the same dicrectory 
-        os.system('conda activate CREEP')
-        
-        result = subprocess.run(['python', f'{self.CREEP_dir}scripts/step_02_extract_CREEP.py', '--pretrained_folder', 
+        cmd = ['conda', 'run', '-n', self.env_name, 'python', f'{self.CREEP_dir}scripts/step_02_extract_CREEP.py', '--pretrained_folder', 
                                  f'{self.CREEP_cache_dir}output/easy_split', 
                                   '--dataset', input_filename,
                                   '--cache_dir', self.CREEP_dir, 
                                   '--modality', self.modality, 
-                                  '--output_dir', f'{tmp_dir}'],
-                                capture_output=True, text=True)
-        
-        result = subprocess.run(['python', f'{self.CREEP_dir}scripts/downstream_retrieval.py', '--pretrained_folder',
+                                  '--output_dir', f'{tmp_dir}']
+        if self.args_extract is not None:
+            cmd.extend(self.args_extract)
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        cmd = ['conda', 'run', '-n', self.env_name, 'python', f'{self.CREEP_dir}scripts/downstream_retrieval.py', '--pretrained_folder',
                                  f'{self.CREEP_cache_dir}output/easy_split', 
                                  '--query_dataset', input_filename, 
                                  '--reference_dataset', 'all_ECs',
                                  '--query_modality', self.modality,
                                  '--cache_dir', self.CREEP_cache_dir, 
                                  '--output_dir', f'{tmp_dir}',
-                                 '--reference_modality', self.reference_modality], capture_output=True, text=True)
+                                 '--reference_modality', self.reference_modality]
+        if self.args_retrieval is not None:
+            cmd.extend(self.args_retrieval)
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        
         output_filename = f'{tmp_dir}/creep_reaction2protein_retrieval_similarities.npy'
         if result.stderr:
             logger.error(result.stderr)

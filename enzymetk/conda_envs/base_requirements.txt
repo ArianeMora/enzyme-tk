@@ -3,7 +3,7 @@ scikit-learn
 numpy
 seaborn
 sciutil
-pandas
+pandas==2.1.4
 biopython
 sentence_transformers
 pubchempy

@@ -4,6 +4,7 @@ from tempfile import TemporaryDirectory
 import subprocess
 import logging
 import numpy as np
+import os
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -40,12 +41,7 @@ class CREEP(Step):
         df.to_csv(input_filename, index=False)
         
         # Might have an issue if the things are not correctly installed in the same dicrectory 
-        print(' '.join(['python', f'{self.CREEP_dir}scripts/step_02_extract_CREEP.py', '--pretrained_folder', 
-                                 f'{self.CREEP_cache_dir}output/easy_split', 
-                                  '--dataset', input_filename,
-                                  '--cache_dir', self.CREEP_dir, 
-                                  '--modality', self.modality, 
-                                  '--output_dir', f'{tmp_dir}']))
+        os.system('conda activate CREEP')
         
         result = subprocess.run(['python', f'{self.CREEP_dir}scripts/step_02_extract_CREEP.py', '--pretrained_folder', 
                                  f'{self.CREEP_cache_dir}output/easy_split', 
@@ -58,7 +54,7 @@ class CREEP(Step):
         result = subprocess.run(['python', f'{self.CREEP_dir}scripts/downstream_retrieval.py', '--pretrained_folder',
                                  f'{self.CREEP_cache_dir}output/easy_split', 
                                  '--query_dataset', input_filename, 
-                                 '--reference_dataset', 'all_reactions',
+                                 '--reference_dataset', 'all_ECs',
                                  '--query_modality', self.modality,
                                  '--cache_dir', self.CREEP_cache_dir, 
                                  '--output_dir', f'{tmp_dir}',
@@ -76,6 +72,7 @@ class CREEP(Step):
             data = np.load(output_filename)
             all_ecs = np.load(f"{self.CREEP_dir}/data/output/easy_split/representations/all_ECs_cluster_centers.npy", allow_pickle=True)
             rxn_data = np.load(f"{self.CREEP_dir}/data/output/easy_split/representations/easy_reaction_test_representations.npy", allow_pickle=True)
+            print(f"{self.CREEP_dir}/data/output/easy_split/representations/easy_reaction_test_representations.npy")
             data_dict = rxn_data.item()
             data_dict = data_dict['reaction_repr_array']
             data_rxn = all_ecs.item()

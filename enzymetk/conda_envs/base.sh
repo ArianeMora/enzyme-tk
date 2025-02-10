@@ -11,3 +11,9 @@ pip install -r base_requirements.txt
 conda install pytorch::faiss-gpu -y
 conda install -c conda-forge pyarrow -y
 pip install transformers
+
+# INstall requirements for docko
+conda install -c conda-forge pdbfixer -y
+conda config --env --add channels conda-forge
+pip install git+https://github.com/chaidiscovery/chai-lab.git
+pip install docko

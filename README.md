@@ -139,10 +139,71 @@ df << (ClustalOmega(id_col, seq_col) >> Save('tmp/clustalomega_test.pkl'))
 
 ### CREEP
 
-CREEP is a tool for predicting the EC number of an enzyme.
+CREEP is a tool for predicting the EC number of a reaction. At the moment it only supports reactions to EC however we are extending this to other modalities. 
 
 ```python
-creep = CREEP()
+from steps.annotateEC_CREEP_step import CREEP
+from steps.save_step import Save
+import pandas as pd
+
+# CREEP expects you to have downloaded the data from the zotero page and put it in the data/CREEP folder
+output_dir = 'tmp/'
+df = pd.DataFrame({'EC number': ['1.1.1.1', '1.1.1.2'], 
+                   'Sequence': ['MALWMRLLPLLALLALWGPDPAAA', 'MALWMRLLPLLALLALWGPDPAAA'], 
+                   'Reaction': ['O=P(OC1=CC=CC=C1)(OC2=CC=CC=C2)OC3=CC=CC=C3>>O=P(O)(OC4=CC=CC=C4)OC5=CC=CC=C5.OC6=CC=CC=C6',
+                                'O=P(OC1=CC=CC=C1)(OC2=CC=CC=C2)OC3=CC=CC=C3>>O=P(O)(OC4=CC=CC=C4)OC5=CC=CC=C5.OC6=CC=CC=C6']})
+id_col = 'Entry'
+reaction_col = 'Reaction'
+
+df << (CREEP(id_col, reaction_col, CREEP_cache_dir='/disk1/share/software/CREEP/data/', CREEP_dir='/disk1/share/software/CREEP/',
+            modality='reaction', reference_modality='protein') >> Save(f'{output_dir}CREEP_test_protein.pkl'))
+```
+
+### EmbedESM
+
+EmbedESM is a tool for embedding a set of sequences using ESM2.
+
+```python
+from steps.embedprotein_esm_step import EmbedESM
+from steps.save_step import Save
+import pandas as pd
+
+id_col = 'Entry'
+seq_col = 'Sequence'
+label_col = 'ActiveSite'
+rows = [['AXE2_TALPU', '10', 'MHSKFFAASLLGLGAAAIPLEGVMEKRSCPAIHVFGARETTASPGYGSSSTVVNGVLSAYPGSTAEAINYPACGGQSSCGGASYSSSVAQGIAAVASAVNSFNSQCPSTKIVLVGYSQGGEIMDVALCGGGDPNQGYTNTAVQLSSSAVNMVKAAIFMGDPMFRAGLSYEVGTCAAGGFDQRPAGFSCPSAAKIKSYCDASDPYCCNGSNAATHQGYGSEYGSQALAFVKSKLG'],
+        ['AXE2_GEOSE', '1|2', 'MKIGSGEKLLFIGDSITDCGRARPEGEGSFGALGTGYVAYVVGLLQAVYPELGIRVVNKGISGNTVRDLKARWEEDVIAQKPDWVSIMIGINDVWRQYDLPFMKEKHVYLDEYEATLRSLVLETKPLVKGIILMTPFYIEGNEQDPMRRTMDQYGRVVKQIAEETNSLFVDTQAAFNEVLKTLYPAALAWDRVHPSVAGHMILARAFLREIGFEWVRSR'], 
+        ['AXE7A_XYLR2', '1', 'MFNFAPKQTTEMKKLLFTLVFVLGSMATALAENYPYRADYLWLTVPNHADWLYKTGERAKVEVSFCLYGMPQNVEVAYEIGPDMMPATSSGKVTLKNGRAVIDMGTMKKPGFLDMRLSVDGKYQHHVKVGFSPELLKPYTKNPQDFDAFWKANLDEARKTPVSVSCNKVDKYTTDAFDCYLLKIKTDRRHSIYGYLTKPKKAGKYPVVLCPPGAGIKTIKEPMRSTFYAKNGFIRLEMEIHGLNPEMTDEQFKEITTAFDYENGYLTNGLDDRDNYYMKHVYVACVRAIDYLTSLPDWDGKNVFVQGGSQGGALSLVTAGLDPRVTACVANHPALSDMAGYLDNRAGGYPHFNRLKNMFTPEKVNTMAYYDVVNFARRITCPVYITWGYNDNVCPPTTSYIVWNLITAPKESLITPINEHWTTSETNYTQMLWLKKQVK'], 
+        ['A0A0B8RHP0_LISMN', '2', 'MKKLLFLGDSVTDAGRDFENDRELGHGYVKIIADQLEQEDVTVINRGVSANRVADLHRRIEADAISLQPDVVTIMIGINDTWFSFSRWEDTSVTAFKEVYRVILNRIKTETNAELILMEPFVLPYPEDRKEWRGDLDPKIGAVRELAAEFGATLIPLDGLMNALAIKHGPTFLAEDGVHPTKAGHEAIASTWLEFTK']]
+df = pd.DataFrame(rows, columns=[id_col, label_col, seq_col])
+df << (EmbedESM(id_col, seq_col, extraction_method='mean', tmp_dir='tmp/') >> Save('tmp/esm2_test.pkl'))
+# You can also extract the active site embedding in addition to the mean embedding
+df << (EmbedESM(id_col, seq_col, extraction_method='active_site', active_site_col='ActiveSite', tmp_dir='tmp/') >> Save('tmp/esm2_test_active_site.pkl'))
+```
+
+### FoldSeek
+
+FoldSeek does a similarity search against a database of strcutures, it runs in the `enzyme-tk` environment. Similarly to the diamond blast, you can either create databases yourself before hand using the 
+foldseek documentation or you can create a database on the fly by passing the dataframe with a column called `label` that has two values: `reference` and `query`.
+If you pass a database, you need to pass the path to the database.
+
+The columns expect a path to a pdb file i.e. the output from the `Chai` step.
+
+```python
+from steps.similarity_foldseek_step import FoldSeek
+from steps.save_step import Save
+import pandas as pd
+
+# id_col: str, seq_col: str, proteinfer_dir: str,
+output_dir = 'tmp/'
+rows = [['tmp/P0DP24/chai/P0DP24_3.cif'],
+        ['tmp/P0DP24/chai/P0DP24_1.cif']]
+df = pd.DataFrame(rows, columns=['pdbs'])
+# foldseek_dir: str, pdb_column_name: str, reference_database: str
+pdb_column_name = 'pdbs'
+reference_database = '/disk1/share/software/foldseek/structures/pdb/pdb'
+df << (FoldSeek(pdb_column_name, reference_database) >> Save(f'{output_dir}pdb_files.pkl'))
+
 ```
 
 

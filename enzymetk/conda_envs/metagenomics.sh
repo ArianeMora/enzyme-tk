@@ -20,4 +20,4 @@ cd ..
 wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/3.1.1/sratoolkit.3.1.1-ubuntu64.tar.gz
 tar -vxzf sratoolkit.3.1.1-ubuntu64.tar.gz
 echo export PATH=$PATH:$PWD/bin >> ~/.bashrc 
-
+source ~/.bashrc

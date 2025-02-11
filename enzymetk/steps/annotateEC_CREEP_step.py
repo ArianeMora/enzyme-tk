@@ -40,13 +40,13 @@ class CREEP(Step):
             
     def __execute(self, df: pd.DataFrame, tmp_dir: str) -> pd.DataFrame:
         tmp_dir = '/disk1/ariane/vscode/degradeo/pipeline/tmp/'
-        input_filename = f'{tmp_dir}/creep.csv'
+        input_filename = f'{tmp_dir}/creepasjkdkajshdkja.csv'
         df.to_csv(input_filename, index=False)
         cmd = ['conda', 'run', '-n', self.env_name, 'python', f'{self.CREEP_dir}scripts/step_02_extract_CREEP.py', '--pretrained_folder', 
                                  f'{self.CREEP_cache_dir}output/easy_split', 
                                   '--dataset', input_filename,
                                   '--cache_dir', self.CREEP_dir, 
-                                  '--modality', self.modality, 
+                                  '--modality', self.modality.strip(), 
                                   '--output_dir', f'{tmp_dir}']
         if self.args_extract is not None:
             cmd.extend(self.args_extract)
@@ -55,14 +55,15 @@ class CREEP(Step):
                                  f'{self.CREEP_cache_dir}output/easy_split', 
                                  '--query_dataset', input_filename, 
                                  '--reference_dataset', 'all_ECs',
-                                 '--query_modality', self.modality,
+                                 '--query_modality', self.modality.strip(),
                                  '--cache_dir', self.CREEP_cache_dir, 
                                  '--output_dir', f'{tmp_dir}',
                                  '--reference_modality', self.reference_modality]
+        print(' '.join(cmd))
         if self.args_retrieval is not None:
             cmd.extend(self.args_retrieval)
         result = subprocess.run(cmd, capture_output=True, text=True)
-        
+        print(result)
         output_filename = f'{tmp_dir}/creep_reaction2protein_retrieval_similarities.npy'
         if result.stderr:
             logger.error(result.stderr)
@@ -76,8 +77,8 @@ class CREEP(Step):
             data = np.load(output_filename)
             all_ecs = np.load(f"{self.CREEP_dir}/data/output/easy_split/representations/all_ECs_cluster_centers.npy", allow_pickle=True)
             rxn_data = np.load(f"{self.CREEP_dir}/data/output/easy_split/representations/easy_reaction_test_representations.npy", allow_pickle=True)
-            print(f"{self.CREEP_dir}/data/output/easy_split/representations/easy_reaction_test_representations.npy")
             data_dict = rxn_data.item()
+            print(data_dict)
             data_dict = data_dict['reaction_repr_array']
             data_rxn = all_ecs.item()
             data_rxn = data_rxn['protein_repr_array']

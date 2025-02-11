@@ -21,6 +21,7 @@ class ChemBERT(Step):
         results = []
         for v in data:
             i, smiles = v[0], v[1]
+            print(smiles)
             encoded_input = self.tokenizer(
                 smiles,
                 truncation=True,
@@ -44,7 +45,6 @@ class ChemBERT(Step):
             for r in results:
                 for j in r:
                     all_results_map[j[0]] = j[1]
-                
             encodings = []
             for uid in df[self.id_col].values:
                 if all_results_map.get(uid) is None:
@@ -55,7 +55,7 @@ class ChemBERT(Step):
             return df
         
         else:
-            data.append([(i, v) for i, v in df[[self.id_col, self.value_col]].values])
+            data = [(i, v) for i, v in df[[self.id_col, self.value_col]].values]
             results = self.__execute(data)
             df['chemberta'] = [r[1] for r in results]
             return df

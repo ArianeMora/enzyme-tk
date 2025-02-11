@@ -5,7 +5,6 @@ Step to run multiple sequence alignment with the Clustal Omega tool.
 from step import Step
 import pandas as pd
 import numpy as np
-from multiprocessing.dummy import Pool as ThreadPool
 from tempfile import TemporaryDirectory
 import os
 import subprocess
@@ -14,10 +13,10 @@ import string
 
 class ClustalOmega(Step):
     
-    def __init__(self, clustalomega_dir: str, sequence_column_name: str):
-        self.clustalomega_dir = clustalomega_dir
-        self.sequence_column_name = sequence_column_name
-        self.num_threads = 1
+    def __init__(self, id_col: str, seq_col: str, tmp_dir: str = None):
+        self.seq_col = seq_col
+        self.id_col = id_col
+        self.tmp_dir = tmp_dir
 
     def __execute(self, data: list) -> np.array: 
         df, tmp_dir = data
@@ -27,11 +26,11 @@ class ClustalOmega(Step):
 
         # Turn dataframe into fasta file
         with open(fasta_file, 'w') as f:
-            for index, row in df.iterrows():
-                f.write(f">{row['ID']}\n{row['sequence']}\n")
+            for seq_id, seq in df[[self.id_col, self.seq_col]].values:
+                f.write(f">{seq_id}\n{seq}\n")
 
         # Running Clustal Omega on the generated FASTA file
-        subprocess.run([f'{self.clustalomega_dir}./clustalo', '-i', fasta_file, '-o', output_file], check=True)
+        subprocess.run(['clustalo', '-i', fasta_file, '-o', output_file], check=True)
 
         sequences = {}
 
@@ -46,29 +45,17 @@ class ClustalOmega(Step):
                     sequences[current_id] = ""  # Initialize an empty string for this ID
                 else:
                     # Sequence line; append it to the current ID's sequence
-                    sequences[current_id] += line
+                    sequences[current_id] += line.strip()
 
         # Convert the sequences dictionary into a DataFrame
-        df_aligned = pd.DataFrame(list(sequences.items()), columns=['ID', 'aligned_sequence'])
+        df_aligned = pd.DataFrame(list(sequences.items()), columns=[self.id_col, 'aligned_sequence'])
 
-        df = pd.merge(df, df_aligned, on='ID', how='left')
-        #print(df.head())
+        df = pd.merge(df, df_aligned, on=self.id_col, how='left')
                 
         return df
 
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:
+        if self.tmp_dir is not None:
+            return self.__execute([df, self.tmp_dir])
         with TemporaryDirectory() as tmp_dir:
-            if self.num_threads > 1:
-                data = []
-                df_list = np.array_split(df, self.num_threads)
-                pool = ThreadPool(self.num_threads)
-                for df_chunk in df_list:
-                    data.append([df_chunk, tmp_dir])
-                results = pool.map(self.__execute, data)
-                df = pd.DataFrame()
-                for dfs in results:
-                    df = pd.concat([df, dfs])
-                return df
-            else:
-                return self.__execute([df, tmp_dir])
-                return df
+            return self.__execute([df, tmp_dir])

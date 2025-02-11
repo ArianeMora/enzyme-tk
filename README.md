@@ -73,6 +73,9 @@ df << (ActiveSitePred(id_col, seq_col, squidly_dir, num_threads) >> Save('tmp/sq
 ### Chai
 
 Chai is a tool for predicting the structure of a protein and a ligand, this tool outputs the data to a new folder and creates directories based on the id that is passed. We return the paths to the specific structure for each id in the returned dataframe.
+
+Requres the `docko` conda environment to be created.
+
 ```python
 output_dir = 'tmp/'
 num_threads = 1
@@ -87,12 +90,23 @@ df << (Chai(id_col, seq_col, substrate_col, f'{output_dir}', num_threads) >> Sav
 
 ```
 
-### Proteinfer
+### ChemBERTa
 
-Proteinfer is a tool for predicting the EC number of an enzyme.
+ChemBERTa2 encodes reactions and SMILES strings into a vector space. Note this requires the base environment, i.e. `enzymetk` conda env.
 
 ```python
-proteinfer = ProteInfer()
+from steps.embedchem_chemberta_step import ChemBERT
+from steps.save_step import Save
+
+output_dir = 'tmp/'
+num_threads = 1
+id_col = 'Entry'
+seq_col = 'Sequence'
+substrate_col = 'Substrate'
+rows = [['P0DP23', 'MALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAA', 'CCCCC(CC)COC(=O)C1=CC=CC=C1C(=O)OCC(CC)CCCC'], 
+        ['P0DP24', 'MALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAA', 'CCCCC(CC)COC(=O)C1=CC=CC=C1C(=O)OCC(CC)CCCC']]
+df = pd.DataFrame(rows, columns=[id_col, seq_col, substrate_col])
+df << (ChemBERT(id_col, substrate_col, num_threads) >> Save(f'{output_dir}chemberta.pkl'))
 ```
 
 ### CLEAN
@@ -102,6 +116,26 @@ CLEAN is a tool for predicting the EC number of an enzyme.
 ```python
 clean = CLEAN()
 ```
+### ClustalOmega
+
+ClustalOmega is a tool for aligning a set of sequences. This gets installed to the system (expecting a linux machine) and added to the bash path.
+
+```python
+from steps.generate_msa_step import ClustalOmega
+from steps.save_step import Save
+import pandas as pd
+
+id_col = 'Entry'
+seq_col = 'Sequence'
+label_col = 'label'
+rows = [['AXE2_TALPU', 'query', 'MHSKFFAASLLGLGAAAIPLEGVMEKRSCPAIHVFGARETTASPGYGSSSTVVNGVLSAYPGSTAEAINYPACGGQSSCGGASYSSSVAQGIAAVASAVNSFNSQCPSTKIVLVGYSQGGEIMDVALCGGGDPNQGYTNTAVQLSSSAVNMVKAAIFMGDPMFRAGLSYEVGTCAAGGFDQRPAGFSCPSAAKIKSYCDASDPYCCNGSNAATHQGYGSEYGSQALAFVKSKLG'],
+        ['AXE2_TALPU', 'reference', 'MHSKFFAASLLGLGAAAIPLEGVMEKRSCPAIHVFGARETTASPGYGSSSTVVNGVLSAYPGSTAEAINYPACGGQSSCGGASYSSSVAQGIAAVASAVNSFNSQCPSTKIVLVGYSQGGEIMDVALCGGGDPNQGYTNTAVQLSSSAVNMVKAAIFMGDPMFRAGLSYEVGTCAAGGFDQRPAGFSCPSAAKIKSYCDASDPYCCNGSNAATHQGYGSEYGSQALAFVKSKLG'],
+        ['AXE2_GEOSE', 'reference', 'MKIGSGEKLLFIGDSITDCGRARPEGEGSFGALGTGYVAYVVGLLQAVYPELGIRVVNKGISGNTVRDLKARWEEDVIAQKPDWVSIMIGINDVWRQYDLPFMKEKHVYLDEYEATLRSLVLETKPLVKGIILMTPFYIEGNEQDPMRRTMDQYGRVVKQIAEETNSLFVDTQAAFNEVLKTLYPAALAWDRVHPSVAGHMILARAFLREIGFEWVRSR'], 
+        ['AXE7A_XYLR2', 'referece', 'MFNFAPKQTTEMKKLLFTLVFVLGSMATALAENYPYRADYLWLTVPNHADWLYKTGERAKVEVSFCLYGMPQNVEVAYEIGPDMMPATSSGKVTLKNGRAVIDMGTMKKPGFLDMRLSVDGKYQHHVKVGFSPELLKPYTKNPQDFDAFWKANLDEARKTPVSVSCNKVDKYTTDAFDCYLLKIKTDRRHSIYGYLTKPKKAGKYPVVLCPPGAGIKTIKEPMRSTFYAKNGFIRLEMEIHGLNPEMTDEQFKEITTAFDYENGYLTNGLDDRDNYYMKHVYVACVRAIDYLTSLPDWDGKNVFVQGGSQGGALSLVTAGLDPRVTACVANHPALSDMAGYLDNRAGGYPHFNRLKNMFTPEKVNTMAYYDVVNFARRITCPVYITWGYNDNVCPPTTSYIVWNLITAPKESLITPINEHWTTSETNYTQMLWLKKQVK'], 
+        ['A0A0B8RHP0_LISMN', 'reference', 'MKKLLFLGDSVTDAGRDFENDRELGHGYVKIIADQLEQEDVTVINRGVSANRVADLHRRIEADAISLQPDVVTIMIGINDTWFSFSRWEDTSVTAFKEVYRVILNRIKTETNAELILMEPFVLPYPEDRKEWRGDLDPKIGAVRELAAEFGATLIPLDGLMNALAIKHGPTFLAEDGVHPTKAGHEAIASTWLEFTK']]
+df = pd.DataFrame(rows, columns=[id_col, label_col, seq_col])
+df << (ClustalOmega(id_col, seq_col) >> Save('tmp/clustalomega_test.pkl'))
+```
 
 ### CREEP
 
@@ -110,6 +144,16 @@ CREEP is a tool for predicting the EC number of an enzyme.
 ```python
 creep = CREEP()
 ```
+
+
+### Proteinfer
+
+Proteinfer is a tool for predicting the EC number of an enzyme.
+
+```python
+proteinfer = ProteInfer()
+```
+
 
 ### FastTree
 

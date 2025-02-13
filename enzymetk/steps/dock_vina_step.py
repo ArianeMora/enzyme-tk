@@ -31,6 +31,10 @@ class Vina(Step):
             try:
                 residues = str(residues)
                 residues = [int(r) + 1 for r in residues.split('|')]
+                if not os.path.exists(f'{structure_path}'):
+                    # Try get the AF2 structure we expect the label to be the uniprot id
+                    get_alphafold_structure(label, f'{self.output_dir}{label}/{label}_AF2.pdb')
+                    structure_path = f'{self.output_dir}{label}/{label}_AF2.pdb'
                 clean_one_pdb(f'{structure_path}', f'{self.output_dir}{label}/{label}.pdb')
                 pdb_to_pdbqt_protein(f'{self.output_dir}{label}/{label}.pdb', f'{self.output_dir}{label}/{label}.pdbqt')
                 score = dock(sequence='', protein_name=label, smiles=substrate_smiles, ligand_name=substrate_name, residues=residues, 

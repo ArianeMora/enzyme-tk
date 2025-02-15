@@ -7,7 +7,7 @@ CONDA_BASE=$(conda info --base)
 source $CONDA_BASE/etc/profile.d/conda.sh
 
 conda activate enzymetk
-pip install -r base_requirements.txt
+
 conda install pytorch::faiss-gpu -y
 conda install -c conda-forge pyarrow -y
 pip install transformers
@@ -17,3 +17,5 @@ conda install -c conda-forge pdbfixer -y
 conda config --env --add channels conda-forge
 pip install git+https://github.com/chaidiscovery/chai-lab.git
 pip install docko
+# Do this at the end so it forces certain versions like pandas
+pip install -r base_requirements.txt

@@ -23,7 +23,7 @@ class RxnFP(Step):
         input_filename = f'{tmp_dir}/input.csv'
         df.to_csv(input_filename, index=False)
         # Might have an issue if the things are not correctly installed in the same dicrectory 
-        result = subprocess.run(['python', Path(__file__).parent/'rxnfp_run.py', '--out', output_filename, 
+        result = subprocess.run(['python', Path(__file__).parent/'embedchem_rxnfp_run.py', '--out', output_filename, 
                                 '--input', input_filename, '--label', self.value_col], capture_output=True, text=True)
         if result.stderr:
             logger.error(result.stderr)

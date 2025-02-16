@@ -6,7 +6,7 @@ import subprocess
 from pathlib import Path
 import logging
 import numpy as np
-
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -17,6 +17,7 @@ class RxnFP(Step):
     def __init__(self, smiles_col: str, num_threads: int):
         self.value_col = smiles_col
         self.num_threads = num_threads or 1
+        self.bad_server = bad_server
 
     def __execute(self, df: pd.DataFrame, tmp_dir: str) -> pd.DataFrame:
         output_filename = f'{tmp_dir}/rxnfp.pkl'
@@ -34,7 +35,7 @@ class RxnFP(Step):
             if self.num_threads > 1:
                 output_filenames = []
                 df_list = np.array_split(df, self.num_threads)
-                for df_chunk in df_list:
+                for df_chunk in tqdm(df_list, total=len(df_list)):
                     output_filenames.append(self.__execute(df_chunk, tmp_dir))
                     
                 df = pd.DataFrame()

@@ -25,6 +25,7 @@ class UniMol(Step):
                         )
         self.clf = clf
 
+
     def __execute(self, df: pd.DataFrame, tmp_dir: str) -> pd.DataFrame:
         smiles_list = list(df[self.smiles_col].values)
         unimol_repr = self.clf.get_repr(smiles_list, return_atomic_reprs=True)

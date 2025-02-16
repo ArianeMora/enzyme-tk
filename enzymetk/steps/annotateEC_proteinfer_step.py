@@ -73,7 +73,7 @@ class ProteInfer(Step):
         if self.args is not None:
             # Add the args to the command
             cmd.extend(self.args)
-        subprocess.run(cmd, check=True)
+        self.run(cmd)
         df = pd.read_csv(output_filename, sep='\t')
         return df
     

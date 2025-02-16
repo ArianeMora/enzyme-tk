@@ -59,15 +59,10 @@ class CREEP(Step):
                                  '--cache_dir', self.CREEP_cache_dir, 
                                  '--output_dir', f'{tmp_dir}',
                                  '--reference_modality', self.reference_modality]
-        print(' '.join(cmd))
         if self.args_retrieval is not None:
             cmd.extend(self.args_retrieval)
-        result = subprocess.run(cmd, capture_output=True, text=True)
-        print(result)
+        self.run(cmd)
         output_filename = f'{tmp_dir}/creep_reaction2protein_retrieval_similarities.npy'
-        if result.stderr:
-            logger.error(result.stderr)
-        logger.info(result.stdout)
         return output_filename
     
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:

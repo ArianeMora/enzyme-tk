@@ -30,14 +30,10 @@ class SelFormer(Step):
             output_filename = f'{tmp_dir}/{label}.csv'
             input_filename = f'{tmp_dir}/{label}.tsv'
             sub_df.to_csv(input_filename, sep='\t', index=False)
-            # Might have an issue if the things are not correctly installed in the same dicrectory 
-            result = subprocess.run(['python', Path(__file__).parent/'selformer_run.py', '--out', output_filename, 
+            cmd = ['python', Path(__file__).parent/'selformer_run.py', '--out', output_filename, 
                                      '--input', input_filename, '--label', label, '--dir', self.selformer_dir, 
-                                     '--model', self.model_file], capture_output=True, text=True)
-            if result.stderr:
-                logger.error(result.stderr)
-            logger.info(result.stdout)   
-
+                                     '--model', self.model_file]
+            self.run(cmd)
             df = pd.read_csv(output_filename)
      
         return df

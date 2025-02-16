@@ -76,20 +76,21 @@ class CLEAN(Step):
         tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
         # Since clean is GPU hungry, we only run CLEAN on the ones that proteInfer has predicted to be class 3.
         # Need to first copy the data to the CLEAN folder because it's stupid
-        subprocess.run(['cp',  input_filename, f'{self.clean_dir}data/inputs/{tmp_label}.fasta'], check=True)
+        cmd = ['cp',  input_filename, f'{self.clean_dir}data/inputs/{tmp_label}.fasta']
+        self.run(cmd)
         # Run clean with clean environment
         cmd = ['conda', 'run', '-n', self.env_name, 'python3', f'{self.clean_dir}CLEAN_infer_fasta.py', 
                         '--fasta_data', tmp_label]
         if self.args is not None:
             # Add the args to the command
             cmd.extend(self.args)
-        subprocess.run(cmd, check=True)
+        self.run(cmd)
         # Copy across the results file
         df = pd.read_csv(f'{self.clean_dir}results/inputs/{tmp_label}_maxsep.csv', header=None, sep='\t')
-        # Clean up
-        subprocess.run(['rm', f'{self.clean_dir}data/inputs/{tmp_label}.fasta'])
-        subprocess.run(['rm', f'{self.clean_dir}results/inputs/{tmp_label}_maxsep.csv'])
-        
+        cmd = ['rm', f'{self.clean_dir}data/inputs/{tmp_label}.fasta']
+        self.run(cmd)
+        cmd = ['rm', f'{self.clean_dir}results/inputs/{tmp_label}_maxsep.csv']
+        self.run(cmd)        
         return df
     
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:

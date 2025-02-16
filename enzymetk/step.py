@@ -1,6 +1,13 @@
 from __future__ import annotations
 import pandas as pd
+from sciutil import SciUtil
+import timeit
+import logging
+import subprocess
 
+u = SciUtil()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class Pipeline():
     
@@ -25,6 +32,19 @@ class Step():
         """ Execute some shit """ 
         return df
     
+    def run(self, cmd: list) -> None:
+        """ Run a command """
+        start = timeit.default_timer()
+        u.dp(['Running command', ' '.join([str(c) for c in cmd])])
+        result = subprocess.run(cmd, capture_output=True, text=True)       
+        u.warn_p(['Output:'])
+        print(result.stdout)
+        u.err_p(['Error:', result.stderr])
+        if result.stderr:
+            logger.error(result.stderr)
+        logger.info(result.stdout)
+        u.dp(['Time for command to run (min): ', (timeit.default_timer() - start)/60])
+
     def __rshift__(self, other: Step) -> Step:
         return Pipeline(self, other)
         

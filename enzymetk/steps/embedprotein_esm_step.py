@@ -55,11 +55,16 @@ def extract_mean_embedding(df, id_column, encoding_dir, rep_num=33):
     count_fail = 0
     count_success = 0
     for entry in tqdm(df[id_column].values):
-        file = Path(os.path.join(encoding_dir, f'/{entry}.pt'))
-        embedding_file = torch.load(file)
-        tensor = embedding_file['representations'][rep_num] # have to get the last layer (36) of the embeddings... very dependant on ESM model used! 36 for medium ESM2
-        t = np.mean(np.asarray(tensor).astype(np.float32), axis=0)
-        tensors.append(t)
+        try:
+            file = Path(os.path.join(encoding_dir, f'{entry}.pt'))
+            embedding_file = torch.load(file)
+            tensor = embedding_file['representations'][rep_num] # have to get the last layer (36) of the embeddings... very dependant on ESM model used! 36 for medium ESM2
+            t = np.mean(np.asarray(tensor).astype(np.float32), axis=0)
+            tensors.append(t)
+        except Exception as e:
+            print(f'Error loading file {file}: {e}')
+            count_fail += 1
+            tensors.append(None)
 
     df['embedding'] = tensors
     print(count_success, count_fail, count_fail + count_success)

@@ -28,8 +28,15 @@ class UniMol(Step):
 
     def __execute(self, df: pd.DataFrame, tmp_dir: str) -> pd.DataFrame:
         smiles_list = list(df[self.smiles_col].values)
-        unimol_repr = self.clf.get_repr(smiles_list, return_atomic_reprs=True)
-        df['unimol_repr'] = unimol_repr['cls_repr']
+        reprs = []
+        for smile in smiles_list:
+            try:
+                unimol_repr = self.clf.get_repr([smile], return_atomic_reprs=True)
+                reprs.append(unimol_repr['cls_repr'])
+            except Exception as e:
+                logger.warning(f"Error embedding smile {smile}: {e}")
+                reprs.append(None)
+        df['unimol_repr']  = reprs
         return df
     
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:

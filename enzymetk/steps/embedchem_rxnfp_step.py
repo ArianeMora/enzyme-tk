@@ -14,16 +14,16 @@ logger.setLevel(logging.INFO)
     
 class RxnFP(Step):
     
-    def __init__(self, smiles_col: str, num_threads: int):
+    def __init__(self, smiles_col: str, num_threads: int, env_name: str = 'rxnfp'):
         self.value_col = smiles_col
         self.num_threads = num_threads or 1
-        self.bad_server = bad_server
+        self.env_name = env_name
 
     def __execute(self, df: pd.DataFrame, tmp_dir: str) -> pd.DataFrame:
         output_filename = f'{tmp_dir}/rxnfp.pkl'
         input_filename = f'{tmp_dir}/input.csv'
         df.to_csv(input_filename, index=False)
-        cmd = ['python', Path(__file__).parent/'embedchem_rxnfp_run.py', '--out', output_filename, 
+        cmd = ['conda', 'run', '-n', self.env_name, 'python', Path(__file__).parent/'embedchem_rxnfp_run.py', '--out', output_filename, 
                                 '--input', input_filename, '--label', self.value_col]
         self.run(cmd)
         # Might have an issue if the things are not correctly installed in the same dicrectory 

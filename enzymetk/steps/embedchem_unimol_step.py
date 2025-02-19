@@ -1,10 +1,10 @@
 from step import Step
 import pandas as pd
 from tempfile import TemporaryDirectory
-from pathlib import Path
 import logging
 import numpy as np
 from unimol_tools import UniMolRepr
+from multiprocessing.dummy import Pool as ThreadPool
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -26,7 +26,7 @@ class UniMol(Step):
         self.clf = clf
 
 
-    def __execute(self, df: pd.DataFrame, tmp_dir: str) -> pd.DataFrame:
+    def __execute(self, df: pd.DataFrame) -> pd.DataFrame:
         smiles_list = list(df[self.smiles_col].values)
         reprs = []
         for smile in smiles_list:
@@ -42,11 +42,12 @@ class UniMol(Step):
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:
         with TemporaryDirectory() as tmp_dir:
             if self.num_threads > 1:
-                output_filenames = []
+                data = []
                 df_list = np.array_split(df, self.num_threads)
                 for df_chunk in df_list:
-                    output_filenames.append(self.__execute(df_chunk, tmp_dir))
-                    
+                    data.append(df_chunk)
+                pool = ThreadPool(self.num_threads)
+                output_filenames = pool.map(self.__execute, data)
                 df = pd.DataFrame()
                 for tmp_df in output_filenames:
                     df = pd.concat([df, tmp_df])

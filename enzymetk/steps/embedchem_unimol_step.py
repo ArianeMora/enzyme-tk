@@ -25,7 +25,6 @@ class UniMol(Step):
                         )
         self.clf = clf
 
-
     def __execute(self, df: pd.DataFrame) -> pd.DataFrame:
         smiles_list = list(df[self.smiles_col].values)
         reprs = []
@@ -54,5 +53,5 @@ class UniMol(Step):
                 return df
             
             else:
-                return self.__execute(df, tmp_dir)
+                return self.__execute(df)
                 

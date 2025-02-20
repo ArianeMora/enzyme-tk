@@ -13,28 +13,64 @@ import random
 import string
 
 
+def process_clustering(filename, df, id_column_name):
+    clustering = pd.read_csv(filename, delimiter='\t', header=None)
+    #rename heading as cluster reference and id
+    clustering.columns = ['mmseqs_representative_cluster_seq', id_column_name]
+    clustering.drop_duplicates(subset=id_column_name, keep='first', inplace=True)
+    clustering.set_index(id_column_name, inplace=True)
+    # Join the clustering with the df
+    df = df.set_index(id_column_name)
+    df = df.join(clustering, how='left')
+    df.reset_index(inplace=True)
+    return df
+
 class MMseqs(Step):
     
-    def __init__(self, pdb_column_name: str, reference_database: str, tmp_dir: str = None, args: list = None):
-        self.pdb_column_name = pdb_column_name
+    def __init__(self, id_column_name: str, seq_column_name: str, method='search',reference_database: str = None, tmp_dir: str = None, args: list = None):
+        self.seq_column_name = seq_column_name
+        self.id_column_name = id_column_name
         self.reference_database = reference_database # pdb should be the default
         self.tmp_dir = tmp_dir
         self.args = args
+        self.method = method
         
     def __execute(self, data: list) -> np.array:
         df, tmp_dir = data
         tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
-        # Get the PDB files from the column
-        pdb_files = list(df[self.pdb_column_name].values)
-                
-        subprocess.run(['foldseek', 'easy-search'] + pdb_files + [f'{self.reference_database}', f'{tmp_dir}{tmp_label}.txt', 'tmp'], check=True)
-        
-        df = pd.read_csv(f'{tmp_dir}{tmp_label}.txt', header=None, sep='\t')
-        df.columns = ['Query', 'Target', 'Calpha coordinates of the query', 'Calpha coordinates of the target', 'TM-score of the alignment', 
-                      'TM-score normalized by the query length', 'TM-score normalized by the target length', 'Rotation matrix (computed to by TM-score)', 
-                      'Translation vector (computed to by TM-score)', 'Average LDDT of the alignment', 'LDDT per aligned position', 'Estimated probability for query and target to be homologous']
-        
-        return df
+        # Convert to a fasta
+        with open(f'{tmp_dir}/seqs.fasta', 'w') as f:
+            for i, row in df.iterrows():
+                f.write(f'>{row[self.id_column_name]}\n{row[self.seq_column_name]}\n')
+            
+        if self.reference_database is None and self.method == 'search':
+            print('Creating database')
+            cmd = ['mmseqs', 'createdb', f'{tmp_dir}/seqs.fasta', 'targetDB']
+            self.run(cmd)
+            cmd = ['mmseqs', 'createindex', 'targetDB', 'tmp']
+            self.run(cmd)
+            self.reference_database = 'targetDB'
+
+        # e.g. args --min-seq-id 0.5 -c 0.8 --cov-mode 1
+        if self.method == 'search':
+            cmd = ['mmseqs', 'easy-search', f'{tmp_dir}/seqs.fasta', self.reference_database, f'{tmp_dir}/{tmp_label}.txt', f'{tmp_dir}/tmp']
+        elif self.method == 'cluster':
+            cmd = ['mmseqs', 'easy-cluster', f'{tmp_dir}/seqs.fasta', f'{tmp_dir}/clusterRes', f'{tmp_dir}/tmp']
+        # add in args
+        if self.args is not None:
+           cmd.extend(self.args)
+        print(cmd)
+        self.run(cmd)
+        # https://github.com/soedinglab/MMseqs2/issues/458
+        #df.columns = ['Query', 'Target', 'Score', 'Seq.Id', 'E-value',  'qStartPos', 'qEndPos', 'qLen', 'tStartPos', 'tEndPos', 'tLen']
+        if self.method == 'search':
+            df = pd.read_csv(f'{tmp_dir}/{tmp_label}.txt', header=None, sep='\t')
+            df.columns = ['Query', 'Target', 'Sequence Identity', 'Alignment Length', 'Mismatches',  'Gap Opens', 
+                          'Query Start', 'Query End', 'Target Start', 'Target End', 'E-value', 'Bit Score']
+            return df
+        elif self.method == 'cluster':
+            df = process_clustering(f'{tmp_dir}/clusterRes_cluster.tsv', df, self.id_column_name)   
+            return df
     
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:
         if self.tmp_dir is not None:

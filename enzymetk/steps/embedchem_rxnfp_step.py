@@ -7,6 +7,8 @@ from pathlib import Path
 import logging
 import numpy as np
 from tqdm import tqdm
+import random
+import string
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -20,8 +22,10 @@ class RxnFP(Step):
         self.env_name = env_name
 
     def __execute(self, df: pd.DataFrame, tmp_dir: str) -> pd.DataFrame:
-        output_filename = f'{tmp_dir}/rxnfp.pkl'
-        input_filename = f'{tmp_dir}/input.csv'
+        tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+
+        output_filename = f'{tmp_dir}/rxnfp_{tmp_label}.pkl'
+        input_filename = f'{tmp_dir}/input_{tmp_label}.csv'
         df.to_csv(input_filename, index=False)
         cmd = ['conda', 'run', '-n', self.env_name, 'python', Path(__file__).parent/'embedchem_rxnfp_run.py', '--out', output_filename, 
                                 '--input', input_filename, '--label', self.value_col]

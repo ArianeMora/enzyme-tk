@@ -8,7 +8,8 @@ os.environ['MKL_THREADING_LAYER'] = 'GNU'
 
 # This should be where you downloaded the data from zotero, there is a folder in there called AS_inference
 # This contains the models and the data needed to run the tool
-squidly_dir = '/disk1/share/software/AS_inference/'
+#squidly_dir = '/disk1/share/software/AS_inference/'
+squidly_dir = '/disk1/ariane/vscode/enzyme-tk/models/squidly_final_models/15B/'
 num_threads = 1
 id_col = 'Entry'
 seq_col = 'Sequence'

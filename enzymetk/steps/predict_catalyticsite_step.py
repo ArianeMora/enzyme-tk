@@ -15,11 +15,13 @@ logger.setLevel(logging.INFO)
     
 class ActiveSitePred(Step):
     
-    def __init__(self, id_col: str, seq_col: str, squidly_dir: str, num_threads: int = 1):
+    def __init__(self, id_col: str, seq_col: str, squidly_dir: str, num_threads: int = 1, 
+                 esm2_model = 'esm2_t36_3B_UR50D'):
         self.id_col = id_col
         self.seq_col = seq_col  
         self.num_threads = num_threads or 1
         self.squidly_dir = squidly_dir
+        self.esm2_model = esm2_model
 
     def __to_fasta(self, df: pd.DataFrame, tmp_dir: str) -> pd.DataFrame:
         tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
@@ -35,7 +37,7 @@ class ActiveSitePred(Step):
         input_filename = self.__to_fasta(df, tmp_dir)
         # Might have an issue if the things are not correctly installed in the same dicrectory 
         result = subprocess.run(['python', Path(__file__).parent/'predict_catalyticsite_run.py', '--out', str(tmp_dir), 
-                                '--input', input_filename, '--squidly_dir', self.squidly_dir], capture_output=True, text=True)
+                                '--input', input_filename, '--squidly_dir', self.squidly_dir, '--esm2_model', self.esm2_model], capture_output=True, text=True)
         output_filename = f'{input_filename.replace(".fasta", "_results.pkl")}'
         if result.stderr:
             logger.error(result.stderr)

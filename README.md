@@ -8,7 +8,7 @@ source enzymetk/conda_envs/install_all.sh
 
 ## Usage
 
-If you have any issues at all just email me using my caltech email: amora is the name!
+If you have any issues at all just email me using my caltech email: `amora at caltech . edu`
 
 ## Things to note
 
@@ -37,7 +37,7 @@ For those wanting to use specific arguments, check the individual tools for spec
 
 The steps are the main building blocks of the pipeline. They are responsible for executing the individual tools.
 
-## BLAST
+### BLAST
 
 BLAST is a tool for searching a database of sequences for similar sequences. Here you can either pass a database that you have already created or pass the sequences as part of your dataframe and pass the label column (this needs to have two values: reference and query) reference refers to sequences that you want to search against and query refers to sequences that you want to search for.
 
@@ -115,7 +115,21 @@ df << (ChemBERT(id_col, substrate_col, num_threads) >> Save(f'{output_dir}chembe
 CLEAN is a tool for predicting the EC number of an enzyme.
 
 ```python
-clean = CLEAN()
+
+output_dir = 'tmp/'
+num_threads = 1
+id_col = 'Entry'
+seq_col = 'Sequence'
+substrate_col = 'Substrate'
+rows = [['P0DP23', 'MALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAA', 'CCCCC(CC)COC(=O)C1=CC=CC=C1C(=O)OCC(CC)CCCC'], 
+        ['AXE2', 'MKIGSGEKLLFIGDSITDCGRARPEGEGSFGALGTGYVAYVVGLLQAVYPELGIRVVNKGISGNTVRDLKARWEEDVIAQKPDWVSIMIGINDVWRQYDLPFMKEKHVYLDEYEATLRSLVLETKPLVKGIILMTPFYIEGNEQDPMRRTMDQYGRVVKQIAEETNSLFVDTQAAFNEVLKTLYPAALAWDRVHPSVAGHMILARAFLREIGFEWVRSR', 'CCCCC(CC)COC(=O)C1=CC=CC=C1C(=O)OCC(CC)CCCC']]
+df = pd.DataFrame(rows, columns=[id_col, seq_col, substrate_col])
+# This should be relative to the location of the script if you installed via the install_all.sh script
+# Note you need to have downloaded their predictive models (ToDo )
+clean_dir = 'software/CLEAN/app/'
+df << (CLEAN(id_col, seq_col, clean_dir, num_threads=num_threads) >> Save(f'clean_missing_EC_seqs.pkl'))
+
+
 ```
 ### ClustalOmega
 
@@ -243,7 +257,19 @@ df << (LigandMPNN(pdb_column_name, ligand_mpnn_dir, output_dir,args=args) >> Sav
 Proteinfer is a tool for predicting the EC number of an enzyme.
 
 ```python
-proteinfer = ProteInfer()
+
+output_dir = 'tmp/'
+num_threads = 1
+id_col = 'Entry'
+seq_col = 'Sequence'
+substrate_col = 'Substrate'
+rows = [['P0DP23', 'MALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAA', 'CCCCC(CC)COC(=O)C1=CC=CC=C1C(=O)OCC(CC)CCCC'], 
+        ['AXE2', 'MKIGSGEKLLFIGDSITDCGRARPEGEGSFGALGTGYVAYVVGLLQAVYPELGIRVVNKGISGNTVRDLKARWEEDVIAQKPDWVSIMIGINDVWRQYDLPFMKEKHVYLDEYEATLRSLVLETKPLVKGIILMTPFYIEGNEQDPMRRTMDQYGRVVKQIAEETNSLFVDTQAAFNEVLKTLYPAALAWDRVHPSVAGHMILARAFLREIGFEWVRSR', 'CCCCC(CC)COC(=O)C1=CC=CC=C1C(=O)OCC(CC)CCCC']]
+df = pd.DataFrame(rows, columns=[id_col, seq_col, substrate_col])
+# This should be relative to the location of the script if you installed via the install_all.sh script
+# Note you need to have downloaded their predictive models (ToDo )
+proteinfer_dir = 'software/proteinfer/'
+df << (ProteInfer(id_col, seq_col, proteinfer_dir, num_threads=num_threads) >> Save(f'proteinfer.pkl'))
 ```
 
 

@@ -74,7 +74,7 @@ class ProteInfer(Step):
             # Add the args to the command
             cmd.extend(self.args)
         self.run(cmd)
-        df = pd.read_csv(output_filename, sep='\t')
+        df = pd.read_csv(output_filename, sep='\t', header=None)
         return df
     
     def __clean_df(self, results: pd.DataFrame) -> pd.DataFrame:

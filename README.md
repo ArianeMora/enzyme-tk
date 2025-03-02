@@ -8,6 +8,7 @@ source enzymetk/conda_envs/install_all.sh
 
 ## Usage
 
+If you have any issues at all just email me using my caltech email: amora is the name!
 
 ## Things to note
 

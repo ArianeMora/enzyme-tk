@@ -16,12 +16,13 @@ logger.setLevel(logging.INFO)
 class ActiveSitePred(Step):
     
     def __init__(self, id_col: str, seq_col: str, squidly_dir: str, num_threads: int = 1, 
-                 esm2_model = 'esm2_t36_3B_UR50D'):
+                 esm2_model = 'esm2_t36_3B_UR50D', tmp_dir: str = None):
         self.id_col = id_col
         self.seq_col = seq_col  
         self.num_threads = num_threads or 1
         self.squidly_dir = squidly_dir
         self.esm2_model = esm2_model
+        self.tmp_dir = tmp_dir
 
     def __to_fasta(self, df: pd.DataFrame, tmp_dir: str) -> pd.DataFrame:
         tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
@@ -47,12 +48,16 @@ class ActiveSitePred(Step):
     
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:
         with TemporaryDirectory() as tmp_dir:
+            tmp_dir = self.tmp_dir if self.tmp_dir is not None else tmp_dir
             if self.num_threads > 1:
                 output_filenames = []
                 df_list = np.array_split(df, self.num_threads)
                 for df_chunk in tqdm(df_list):
-                    output_filenames.append(self.__execute(df_chunk, tmp_dir))
-                    
+                    try:
+                        output_filenames.append(self.__execute(df_chunk, tmp_dir))
+                    except Exception as e:
+                         logger.error(f"Error in executing ESM2 model: {e}")
+                         continue
                 df = pd.DataFrame()
                 print(output_filenames)
                 for p in output_filenames:

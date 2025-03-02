@@ -13,6 +13,8 @@ import os
 import subprocess
 import random
 import string
+import os
+from tqdm import tqdm
 
 
 class CLEAN(Step):
@@ -76,6 +78,7 @@ class CLEAN(Step):
         tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
         # Since clean is GPU hungry, we only run CLEAN on the ones that proteInfer has predicted to be class 3.
         # Need to first copy the data to the CLEAN folder because it's stupid
+        os.chdir(f'{self.clean_dir}')
         cmd = ['cp',  input_filename, f'{self.clean_dir}data/inputs/{tmp_label}.fasta']
         self.run(cmd)
         # Run clean with clean environment
@@ -86,7 +89,7 @@ class CLEAN(Step):
             cmd.extend(self.args)
         self.run(cmd)
         # Copy across the results file
-        df = pd.read_csv(f'{self.clean_dir}results/inputs/{tmp_label}_maxsep.csv', header=None, sep='\t')
+        df = pd.read_csv(f'{self.clean_dir}results/inputs/{tmp_label}_maxsep.csv', header=None)
         cmd = ['rm', f'{self.clean_dir}data/inputs/{tmp_label}.fasta']
         self.run(cmd)
         cmd = ['rm', f'{self.clean_dir}results/inputs/{tmp_label}_maxsep.csv']
@@ -96,15 +99,18 @@ class CLEAN(Step):
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:
         with TemporaryDirectory() as tmp_dir:
             if self.num_threads > 1:
-                data = []
+                output_filenames = []
                 df_list = np.array_split(df, self.num_threads)
-                pool = ThreadPool(self.num_threads)
-                for df_chunk in df_list:
-                    data.append([df_chunk, tmp_dir])
-                results = pool.map(self.__execute, data)
+                for df_chunk in tqdm(df_list):
+                    try:
+                        output_filenames.append(self.__execute([df_chunk, tmp_dir]))
+                    except Exception as e:
+                         print(f"Error in executing ESM2 model: {e}")
+                         continue
                 df = pd.DataFrame()
-                for dfs in results:
-                    df = pd.concat([df, dfs])
+                print(output_filenames)
+                for sub_df in output_filenames:
+                    df = pd.concat([df, sub_df])
                 return df
             else:
                 return self.__execute([df, tmp_dir])

@@ -123,9 +123,9 @@ class ProteInfer(Step):
                 df = pd.DataFrame()
                 for dfs in results:
                     df = pd.concat([df, dfs])
-                df = self.__clean_df(df)
+                #df = self.__clean_df(df)
                 return df
             else:
                 df = self.__execute([df, tmp_dir])
-                df = self.__clean_df(df)
+                #df = self.__clean_df(df)
                 return df

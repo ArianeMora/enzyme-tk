@@ -21,6 +21,7 @@ class BLAST(Step):
         self.mode = mode
         self.database = database
         self.args = args
+        self.tmp_dir = tmp_dir
         if self.database is None and self.label_col is None:
             raise ValueError('Database is not set, you can pass a database that you have already created see diamond for more information or the sequences \
                              as part of your dataframe and pass the label column (this needs to have two values: reference and query) reference \

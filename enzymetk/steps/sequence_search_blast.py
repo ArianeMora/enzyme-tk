@@ -32,6 +32,7 @@ class BLAST(Step):
         tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
         query_fasta = os.path.join(tmp_dir, f'{tmp_label}_query.fasta')
         ref_fasta = os.path.join(tmp_dir, f'{tmp_label}_ref.fasta')
+        db_label = os.path.join(tmp_dir, f'{tmp_label}_db')
         # write fasta file which is the input for proteinfer
         if self.label_col is not None:
             with open(query_fasta, 'w+') as fout:
@@ -52,14 +53,20 @@ class BLAST(Step):
             with open(query_fasta, 'w+') as fout:
                 for entry, seq in df[[self.id_col, self.seq_col]].values:
                     fout.write(f'>{entry.strip()}\n{seq.strip()}\n')
-            db_label = self.database
+            if os.path.exists(self.database):
+                # Here we're assuming they're passing a database as a fasta file
+                subprocess.run(['diamond', 'makedb', '--in', self.database, '-d', db_label], check=True)
+            else:
+                db_label = self.database
             
         # Running Clustal Omega on the generated FASTA file
         matches_filename = os.path.join(tmp_dir, f'{tmp_label}_matches.tsv')
-        cmd = ['diamond', self.mode, '-d', db_label, '-q', query_fasta, '-o', matches_filename]
+        cmd = ['diamond', self.mode]
         if self.args is not None:
             cmd.extend(self.args)
-        subprocess.run(cmd)
+        cmd.extend(['-d', db_label, '-q', query_fasta, '-o', matches_filename])
+        print(cmd)
+        self.run(cmd)
         df = pd.read_csv(matches_filename, sep='\t', header=None)
         print(df)
         df.columns = ['query', 'target', 'sequence identity', 'length', 'mismatch', 'gapopen', 'query start', 'query end', 'target start', 'target end', 'e-value', 'bitscore']

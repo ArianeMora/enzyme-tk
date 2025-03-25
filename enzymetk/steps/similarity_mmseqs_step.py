@@ -59,10 +59,9 @@ class MMseqs(Step):
         # add in args
         if self.args is not None:
            cmd.extend(self.args)
-        print(cmd)
+
         self.run(cmd)
         # https://github.com/soedinglab/MMseqs2/issues/458
-        #df.columns = ['Query', 'Target', 'Score', 'Seq.Id', 'E-value',  'qStartPos', 'qEndPos', 'qLen', 'tStartPos', 'tEndPos', 'tLen']
         if self.method == 'search':
             df = pd.read_csv(f'{tmp_dir}/{tmp_label}.txt', header=None, sep='\t')
             df.columns = ['Query', 'Target', 'Sequence Identity', 'Alignment Length', 'Mismatches',  'Gap Opens', 

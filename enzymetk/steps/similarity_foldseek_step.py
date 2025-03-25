@@ -14,26 +14,94 @@ import random
 import string
 
 
+def process_clustering(filename, df, id_column_name):
+    clustering = pd.read_csv(filename, delimiter='\t', header=None)
+    #rename heading as cluster reference and id
+    clustering.columns = ['foldseek_representative_cluster_structure', id_column_name]
+    clustering.drop_duplicates(subset=id_column_name, keep='first', inplace=True)
+    # Remove the chain to a separate column
+    clustering['chain'] = ['_'.join(c.split('_')[-1]) for c in clustering[id_column_name].values]
+    clustering[id_column_name] = ['_'.join(c.split('_')[:-1]) for c in clustering[id_column_name].values]
+    clustering.set_index(id_column_name, inplace=True)
+    # Join the clustering with the df
+    df = df.set_index(id_column_name)
+    df = df.join(clustering, how='left')
+    df.reset_index(inplace=True)
+    return df
+
 class FoldSeek(Step):
     
-    def __init__(self, pdb_column_name: str, reference_database: str, tmp_dir: str = None):
-        self.pdb_column_name = pdb_column_name
+    def __init__(self, id_column_name: str, query_column_name: str, reference_database: str, method='search', query_type='structures', 
+                 args=None, tmp_dir: str = None):
+        self.query_column_name = query_column_name
+        self.id_column_name = id_column_name
         self.reference_database = reference_database # pdb should be the default
         self.tmp_dir = tmp_dir
-        
+        self.method = method
+        self.args = args
+        self.query_type = query_type
+        if self.method not in ['search', 'cluster']:
+            print('Method must be in "search" or "cluster". Will likely fail... ')
+        if self.query_type not in ['seqs', 'structures']:
+            print('query_type must be either "seqs" or "structures" i.e. is it an amino acid sequence or a path to pdb files?')
+
     def __execute(self, data: list) -> np.array:
         df, tmp_dir = data
         tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+        
+        if self.query_type == 'seqs':
+            # Convert to a fasta
+            with open(f'{tmp_dir}/{tmp_label}_seqs.fasta', 'w') as f:
+                for i, row in df.iterrows():
+                    f.write(f'>{row[self.id_column_name]}\n{row[self.query_column_name]}\n')
+            
         # Get the PDB files from the column
-        pdb_files = list(df[self.pdb_column_name].values)
+        pdb_files = list(df[self.query_column_name].values)
+        
+        if self.method == 'search':
+            cmd = ['foldseek', 'easy-search']
+            if self.query_type == 'structures':
+                cmd += pdb_files + [f'{self.reference_database}', f'{tmp_dir}{tmp_label}.txt', 'tmp']
+            else:
+                # Convert the file to a fasta and then pass that file name 
+                # Make a db from the seqs
+                # ToDo: make this more efficient
+                subcmd = ['foldseek', 'databases', 'ProstT5', 'weights', 'tmp']
+                self.run(subcmd)
                 
-        subprocess.run(['foldseek', 'easy-search'] + pdb_files + [f'{self.reference_database}', f'{tmp_dir}{tmp_label}.txt', 'tmp'], check=True)
+                subcmd = ['foldseek', 'createdb', f'{tmp_dir}/{tmp_label}_seqs.fasta', f'db_{tmp_label}', '--prostt5-model', 'weights']
+                self.run(subcmd)
+                
+                # Pass your newly created dB
+                cmd += [f'db_{tmp_label}', f'{self.reference_database}', f'{tmp_dir}{tmp_label}.txt', 'tmp']
+
+        elif self.method == 'cluster':
+            cmd = ['foldseek', 'easy-cluster']
+            if self.query_type == 'structures':
+                cmd += pdb_files + [f'{tmp_dir}/clusterFolds', f'{tmp_dir}']
+            else:
+                subcmd = ['foldseek', 'databases', 'ProstT5', 'weights', 'tmp']
+                subcmd = ['foldseek', 'createdb', f'{tmp_dir}/{tmp_label}_seqs.fasta', f'db_{tmp_label}', '--prostt5-model', 'weights']
+
+                self.run(subcmd)
+                cmd = ['foldseek', 'cluster']
+
+                # Convert the file to a fasta and then pass that file name 
+                cmd += [ f'db_{tmp_label}', f'{tmp_dir}/clusterFolds', f'{tmp_dir}']
+
+        # add in args
+        if self.args is not None:
+           cmd.extend(self.args)
+
+        self.run(cmd)
         
-        df = pd.read_csv(f'{tmp_dir}{tmp_label}.txt', header=None, sep='\t')
-        df.columns = ['Query', 'Target', 'Calpha coordinates of the query', 'Calpha coordinates of the target', 'TM-score of the alignment', 
-                      'TM-score normalized by the query length', 'TM-score normalized by the target length', 'Rotation matrix (computed to by TM-score)', 
-                      'Translation vector (computed to by TM-score)', 'Average LDDT of the alignment', 'LDDT per aligned position', 'Estimated probability for query and target to be homologous']
-        
+        if self.method == 'search':
+            df = pd.read_csv(f'{tmp_dir}{tmp_label}.txt', header=None, sep='\t')
+            df.columns = ['query', 'target', 'fident', 'alnlen', 'mismatch', 
+                      'gapopen', 'qstart', 'qend', 'tstart', 'tend', 'evalue', 'bits']
+        elif self.method == 'cluster':
+            df = process_clustering(f'{tmp_dir}/clusterFolds_cluster.tsv', df, self.id_column_name)   
+            return df
         return df
     
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:

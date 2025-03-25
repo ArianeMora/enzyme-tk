@@ -271,36 +271,3 @@ df = pd.DataFrame(rows, columns=[id_col, seq_col, substrate_col])
 proteinfer_dir = 'software/proteinfer/'
 df << (ProteInfer(id_col, seq_col, proteinfer_dir, num_threads=num_threads) >> Save(f'proteinfer.pkl'))
 ```
-
-
-### FastTree
-
-FastTree is a tool for constructing a phylogenetic tree.
-
-```python
-fasttree = FastTree()
-```
-
-### ClustalOmega
-
-ClustalOmega is a tool for aligning a set of sequences.
-
-```python
-clustalo = ClustalOmega()
-```
-
-### Rxnfp
-
-Rxnfp is a tool for predicting the reaction fingerprint of an enzyme.
-
-```python
-rxnfp = Rxnfp()
-```
-
-### Metagenomics
-
-Metagenomics is a pipeline for extracting genes and annotating them from metagenomic data.
-
-```python
-metagenomics = Metagenomics()
-```

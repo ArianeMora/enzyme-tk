@@ -14,7 +14,7 @@ import string
 from tqdm import tqdm
 
 
-class ReactionDist(Step):
+class SubstrateDist(Step):
     
     def __init__(self, id_column_name: str, smiles_column_name: str, smiles_string: str):
         self.smiles_column_name = smiles_column_name
@@ -25,13 +25,13 @@ class ReactionDist(Step):
         reaction_df, tmp_dir = data
         tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
         
-        rxn = rdChemReactions.ReactionFromSmarts(self.smiles_string)
-        rxn_fp = rdChemReactions.CreateStructuralFingerprintForReaction(rxn)
+        rxn = Chem.MolFromSmiles(self.smiles_string)
+        rxn_fp = FingerprintMols.FingerprintMol(rxn)
         rows = []
         # compare all fp pairwise without duplicates
         for smile_id, smiles in tqdm(reaction_df[[self.id_column_name, self.smiles_column_name]].values): # -1 so the last fp will not be used
-            mol_ = rdChemReactions.ReactionFromSmarts(smiles)
-            fps = rdChemReactions.CreateStructuralFingerprintForReaction(mol_)
+            mol_ = Chem.MolFromSmiles(smiles)
+            fps = FingerprintMols.FingerprintMol(mol_)
             rows.append([smile_id, 
                          smiles, 
                          DataStructs.TanimotoSimilarity(fps, rxn_fp), 

@@ -16,13 +16,14 @@ from tqdm import tqdm
 
 class SubstrateDist(Step):
     
-    def __init__(self, id_column_name: str, smiles_column_name: str, smiles_string: str):
+    def __init__(self, id_column_name: str, smiles_column_name: str, smiles_string: str, num_threads=1):
         self.smiles_column_name = smiles_column_name
         self.id_column_name = id_column_name
         self.smiles_string = smiles_string
+        self.num_threads = num_threads
         
     def __execute(self, data: list) -> np.array:
-        reaction_df, tmp_dir = data
+        reaction_df = data
         tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
         
         rxn = Chem.MolFromSmiles(self.smiles_string)
@@ -41,4 +42,17 @@ class SubstrateDist(Step):
         return distance_df
         
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:
-       return self.__execute([df, None])
+        if self.num_threads > 1:
+            data = []
+            df_list = np.array_split(df, self.num_threads)
+            for df_chunk in df_list:
+                data.append(df_chunk)
+            pool = ThreadPool(self.num_threads)
+            output_filenames = pool.map(self.__execute, data)
+            df = pd.DataFrame()
+            for tmp_df in output_filenames:
+                df = pd.concat([df, tmp_df])
+            return df
+        
+        else:
+            return self.__execute(df)

@@ -1,7 +1,5 @@
-import sys
-sys.path.append('../enzymetk/')
-from steps.predict_catalyticsite_step import ActiveSitePred
-from steps.save_step import Save
+from enzymetk.predict_catalyticsite_step import ActiveSitePred
+from enzymetk.save_step import Save
 import pandas as pd
 import os
 os.environ['MKL_THREADING_LAYER'] = 'GNU'
@@ -9,7 +7,7 @@ os.environ['MKL_THREADING_LAYER'] = 'GNU'
 # This should be where you downloaded the data from zotero, there is a folder in there called AS_inference
 # This contains the models and the data needed to run the tool
 #squidly_dir = '/disk1/share/software/AS_inference/'
-squidly_dir = '/disk1/ariane/vscode/enzyme-tk/models/squidly_final_models/15B/'
+squidly_dir = '/disk1/ariane/vscode/enzyme-tk/models/squidly_final_models/'
 num_threads = 1
 id_col = 'Entry'
 seq_col = 'Sequence'

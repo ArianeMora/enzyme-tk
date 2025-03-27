@@ -3,7 +3,6 @@ Step to run multiple sequence alignment with the Clustal Omega tool.
  ./clustalo -i /home/helen/degradeo/pipeline/helen_data/sequences_test_fasta.txt
 """
 from enzymetk.step import Step
-
 import pandas as pd
 import numpy as np
 from tempfile import TemporaryDirectory

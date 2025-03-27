@@ -1,3 +1,4 @@
+#./foldseek easy-search /home/ariane/degradeo/data/pipeline/p1_predict_activity/p1b_encode_protein/e1_esm/chai/Q0HLQ7/chai/Q0HLQ7_0.cif /home/ariane/degradeo/data/pipeline/p1_predict_activity/p1b_encode_protein/e1_esm/chai/Q0HLQ7/chai/Q0HLQ7_1.cif pdb test_aln.fasta tmp
 """
 Install clean and then you need to activate the environment and install and run via that. 
 
@@ -5,7 +6,6 @@ Honestly it's a bit hacky the way they do it, not bothered to change things so h
 repo and then copy it out of it.
 """
 from enzymetk.step import Step
-
 import pandas as pd
 import numpy as np
 from multiprocessing.dummy import Pool as ThreadPool
@@ -16,20 +16,23 @@ import random
 import string
 
 
-class PoreChop(Step):
+""" Install: conda install -c conda-forge -c bioconda -c defaults prokka """
+class Prokka(Step):
     
-    def __init__(self, porechop_dir: str, input_column_name: str, output_column_name: str, num_threads=1):
+    def __init__(self, porechop_dir: str, name: str, input_column_name: str, output_dir: str, num_threads=1):
         self.porechop_dir = porechop_dir
+        self.name = name
         self.input_column_name = input_column_name
-        self.output_column_name = output_column_name
+        self.output_dir = output_dir
         self.num_threads = num_threads
         
     def __execute(self, data: list) -> np.array:
         df = data
-        # f'./porechop-runner.py -i {data_dir}fastq/{l}.fastq -o {data_dir}trimmed/{l}.fastq'  
+        # f'prokka --outdir {data_dir}prokka/{l} --prefix {l} {data_dir}flye/{l}/assembly.fasta ')
         file_created = []
-        for input_filename, output_filename in df[[self.input_column_name, self.output_column_name]]:        
-            subprocess.run([f'{self.porechop_dir}./porechop-runner.py', '-i',  input_filename, '-o', output_filename], check=True)
+        for name, input_filename, output_dir in df[[self.name, self.input_column_name, self.output_dir]]:    
+            # Note it expects the input file name to be the outpt from flye
+            subprocess.run([f'prokka', '--outdir', output_dir, '--prefix', name, input_filename], check=True)
             # Check that the file was created 
             if os.path.exists(output_filename):
                 file_created.append(True)

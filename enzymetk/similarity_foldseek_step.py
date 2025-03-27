@@ -7,6 +7,7 @@ repo and then copy it out of it.
 """
 from enzymetk.step import Step
 
+
 import pandas as pd
 import numpy as np
 from tempfile import TemporaryDirectory

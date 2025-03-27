@@ -1,5 +1,4 @@
 from enzymetk.step import Step
-
 import pandas as pd
 from tempfile import TemporaryDirectory
 from pathlib import Path

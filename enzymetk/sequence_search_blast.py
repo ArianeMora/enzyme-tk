@@ -18,7 +18,7 @@ class BLAST(Step):
     def __init__(self, id_col: str, sequence_col: str, label_col=None, database=None, mode='blastp', args=None, tmp_dir=None):
         self.id_col = id_col
         self.seq_col = sequence_col
-        self.label_col = label_col # This is whether it is query or reference
+        self.label_col = label_col  # This is whether it is query or reference
         self.mode = mode
         self.database = database
         self.args = args

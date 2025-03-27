@@ -12,14 +12,15 @@ logger.setLevel(logging.INFO)
     
 class Vina(Step):
     
-    def __init__(self, id_col: str, structure_col: str, sequence_col: str, substrate_col: str, substrate_name_col: str, active_site_col: str, output_dir: str, num_threads: int):
+    def __init__(self, id_col: str, structure_col: str, sequence_col: str, 
+                 substrate_col: str, substrate_name_col: str, active_site_col: str, output_dir: str, num_threads: int):
         print('Expects active site residues as a string separated by |. Zero indexed.')
         self.id_col = id_col
         self.structure_col = structure_col
         self.sequence_col = sequence_col
         self.substrate_col = substrate_col
         self.substrate_name_col = substrate_name_col
-        self.active_site_col = active_site_col # Expects active site residues as a string separated by |
+        self.active_site_col = active_site_col  # Expects active site residues as a string separated by |
         self.output_dir = output_dir or None
         self.num_threads = num_threads or 1
 

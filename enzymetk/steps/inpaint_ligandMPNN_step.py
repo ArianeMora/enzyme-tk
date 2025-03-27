@@ -6,7 +6,8 @@ Install clean and then you need to activate the environment and install and run 
 Honestly it's a bit hacky the way they do it, not bothered to change things so have to save the data to their
 repo and then copy it out of it.
 """
-from step import Step
+from enzymetk.step import Step
+
 import pandas as pd
 import numpy as np
 from tempfile import TemporaryDirectory

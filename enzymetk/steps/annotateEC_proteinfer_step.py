@@ -1,4 +1,4 @@
-from step import Step
+from enzymetk.step import Step
 import pandas as pd
 import numpy as np
 from multiprocessing.dummy import Pool as ThreadPool

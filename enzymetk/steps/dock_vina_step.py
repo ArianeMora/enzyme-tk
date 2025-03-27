@@ -1,4 +1,4 @@
-from step import Step
+from enzymetk.step import Step
 import pandas as pd
 from docko.docko import *
 import logging

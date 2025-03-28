@@ -89,7 +89,7 @@ class CLEAN(Step):
             cmd.extend(self.args)
         self.run(cmd)
         # Copy across the results file
-        df = pd.read_csv(f'{self.clean_dir}results/inputs/{tmp_label}_maxsep.csv', header=None)
+        df = pd.read_csv(f'{self.clean_dir}results/inputs/{tmp_label}_maxsep.csv', header=None, sep='\t')
         cmd = ['rm', f'{self.clean_dir}data/inputs/{tmp_label}.fasta']
         self.run(cmd)
         cmd = ['rm', f'{self.clean_dir}results/inputs/{tmp_label}_maxsep.csv']

@@ -67,14 +67,14 @@ class ProteInfer(Step):
         
         os.chdir(self.proteinfer_dir)
         cmd = ['conda', 'run', '-n', self.env_name, 'python3', 
-                f'{self.proteinfer_dir}proteinfer.py',
+                os.path.join(self.proteinfer_dir, f'proteinfer.py'),
                 '-i', input_filename,
                 '-o', output_filename]
         if self.args is not None:
             # Add the args to the command
             cmd.extend(self.args)
         self.run(cmd)
-        df = pd.read_csv(output_filename, sep='\t', header=None)
+        df = pd.read_csv(output_filename, sep='\t')
         return df
     
     def __clean_df(self, results: pd.DataFrame) -> pd.DataFrame:

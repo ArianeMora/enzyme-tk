@@ -1,8 +1,7 @@
 import sys
-sys.path.append('../enzymetk/')
 
-from steps.similarity_foldseek_step import FoldSeek
-from steps.save_step import Save
+from enzymetk.similarity_foldseek_step import FoldSeek
+from enzymetk.save_step import Save
 import pandas as pd
 
 
@@ -14,7 +13,8 @@ df = pd.DataFrame(rows, columns=['id', 'pdbs'])
 # foldseek_dir: str, pdb_column_name: str, reference_database: str
 reference_database = '/disk1/share/software/foldseek/structures/pdb/pdb'
 #df << (FoldSeek('id', 'pdbs', reference_database) >> Save(f'{output_dir}pdb_files.pkl'))
-df << (FoldSeek('id', 'pdbs', reference_database, method='cluster', tmp_dir='tmp/') >> Save(f'{output_dir}pdb_files.pkl'))
+#df << (FoldSeek('id', 'pdbs', reference_database, method='cluster', tmp_dir='tmp/') >> Save(f'{output_dir}pdb_files.pkl'))
+
 
 # id_col: str, seq_col: str, proteinfer_dir: str,
 id_col = 'Entry'
@@ -30,3 +30,6 @@ df = pd.DataFrame(rows, columns=[id_col, label_col, seq_col])
 # foldseek_dir: str, pdb_column_name: str, reference_database: str
 reference_database = '/disk1/share/software/foldseek/structures/pdb/pdb'
 #df << (FoldSeek(id_col, seq_col, reference_database, query_type='seqs',  method='cluster') >> Save(f'{output_dir}pdb_files_seqs.pkl'))
+# foldseek_dir: str, pdb_column_name: str, reference_database: str
+# #df << (FoldSeek('id', 'pdbs', reference_database) >> Save(f'{output_dir}pdb_files.pkl'))
+df << (FoldSeek(id_col, seq_col, reference_database, query_type='seqs',  tmp_dir='tmp/') >> Save(f'{output_dir}pdb_files.pkl'))

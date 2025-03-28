@@ -6,6 +6,14 @@
 source enzymetk/conda_envs/install_all.sh
 ```
 
+## Install enzyme-tk
+
+```bash
+git clone git@github.com:ArianeMora/enzyme-tk.git
+python setup.py sdist bdist_wheel
+pip install dist/enzymetk-0.0.1.tar.gz
+```
+
 ## Usage
 
 If you have any issues at all just email me using my caltech email: `amora at caltech . edu`

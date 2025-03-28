@@ -1,4 +1,5 @@
-from enzymetk.step import Step
+from step import Step
+
 
 import pandas as pd
 

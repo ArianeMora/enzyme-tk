@@ -93,7 +93,12 @@ class CLEAN(Step):
         cmd = ['rm', f'{self.clean_dir}data/inputs/{tmp_label}.fasta']
         self.run(cmd)
         cmd = ['rm', f'{self.clean_dir}results/inputs/{tmp_label}_maxsep.csv']
-        self.run(cmd)        
+        self.run(cmd)   
+        
+        # Change back to the current folder     
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        os.chdir(dir_path)
+        
         return df
     
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:

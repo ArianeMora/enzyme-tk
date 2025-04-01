@@ -16,4 +16,4 @@ df = pd.DataFrame(rows, columns=[id_col, seq_col, substrate_col])
 clean_dir = '/disk1/share/software/CLEAN/app/'
 
 # Note! You cannot have underscores in the sample name (presumably no funky characters)
-df << (CLEAN(id_col, seq_col, clean_dir, num_threads=1) >> Save(f'{output_dir}clean_test.pkl'))
+output_df = (df << (CLEAN(id_col, seq_col, clean_dir, num_threads=1)))

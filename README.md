@@ -21,6 +21,7 @@ pip install dist/enzymetk-0.0.1.tar.gz
 If you have any issues at all just email me using my caltech email: `amora at caltech . edu`
 
 Here are some of the tools that have been implemented to be chained together as a pipeline:
+
 [mmseqs2](https://github.com/soedinglab/mmseqs2)  
 [foldseek](https://github.com/steineggerlab/foldseek)  
 [diamond](https://github.com/bbuchfink/diamond)  

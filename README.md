@@ -1,12 +1,14 @@
 # A pipeline for enzyme engineering
 
+Enzyme-tk is a collection of tools for enzyme engineering, setup as interoperable modules that act on dataframes. These modules are designed to be imported into pipelines for specific function. For this reason, `steps` as each module is called (e.g. finding similar proteins with `BLAST` would be considered a step) are designed to be as light as possible. An example of a pipeline is the `annotate-e` pipeline, this acts to annotate a fasta with an ensemble of methods (each is designated as an Enzyme-tk step). 
+
 ## Installation
 
 ```bash
 source enzymetk/conda_envs/install_all.sh
 ```
 
-## Install enzyme-tk
+## Install subsets of enzyme-tk
 
 ```bash
 git clone git@github.com:ArianeMora/enzyme-tk.git
@@ -18,6 +20,25 @@ pip install dist/enzymetk-0.0.1.tar.gz
 
 If you have any issues at all just email me using my caltech email: `amora at caltech . edu`
 
+Here are some of the tools that have been implemented to be chained together as a pipeline:
+[mmseqs2](https://github.com/soedinglab/mmseqs2)  
+[foldseek](https://github.com/steineggerlab/foldseek)  
+[diamond](https://github.com/bbuchfink/diamond)  
+[proteinfer](https://github.com/google-research/proteinfer)  
+[CLEAN](https://github.com/tttianhao/CLEAN)  
+[chai](https://github.com/chaidiscovery/chai-lab/)  
+[chemBERTa2](https://github.com/seyonechithrananda/bert-loves-chemistry)  
+[SELFormer](https://github.com/HUBioDataLab/SELFormer)  
+[rxnfp](https://github.com/rxn4chemistry/rxnfp)  
+[clustalomega](http://www.clustal.org/omega/)  
+[CREEP](https://github.com/jsunn-y/CARE)  
+[esm](https://github.com/facebookresearch/esm)  
+[LigandMPNN](https://github.com/dauparas/LigandMPNN)  
+[vina](https://vina.scripps.edu/)  
+[Uni-Mol](https://github.com/deepmodeling/Uni-Mol)  
+[fasttree](https://morgannprice.github.io/fasttree/)  
+[Porechop](https://github.com/rrwick/Porechop)  
+[prokka](https://github.com/tseemann/prokka)  
 ## Things to note
 
 All the tools use the conda env of `enzymetk` by default.
@@ -279,3 +300,27 @@ df = pd.DataFrame(rows, columns=[id_col, seq_col, substrate_col])
 proteinfer_dir = 'software/proteinfer/'
 df << (ProteInfer(id_col, seq_col, proteinfer_dir, num_threads=num_threads) >> Save(f'proteinfer.pkl'))
 ```
+
+## Tools and references
+Being a toolkit this is a collection of other tools, which means if you use any of these tools then cite the ones relevant to your work:
+
+[mmseqs2](https://github.com/soedinglab/mmseqs2)  
+[foldseek](https://github.com/steineggerlab/foldseek)  
+[diamond](https://github.com/bbuchfink/diamond)  
+[proteinfer](https://github.com/google-research/proteinfer)  
+[CLEAN](https://github.com/tttianhao/CLEAN)  
+[chai](https://github.com/chaidiscovery/chai-lab/)  
+[chemBERTa2](https://github.com/seyonechithrananda/bert-loves-chemistry)  
+[SELFormer](https://github.com/HUBioDataLab/SELFormer)  
+[rxnfp](https://github.com/rxn4chemistry/rxnfp)  
+[clustalomega](http://www.clustal.org/omega/)  
+[CREEP](https://github.com/jsunn-y/CARE)  
+[esm](https://github.com/facebookresearch/esm)  
+[LigandMPNN](https://github.com/dauparas/LigandMPNN)  
+[vina](https://vina.scripps.edu/)  
+[Uni-Mol](https://github.com/deepmodeling/Uni-Mol)  
+[fasttree](https://morgannprice.github.io/fasttree/)  
+[Porechop](https://github.com/rrwick/Porechop)  
+[prokka](https://github.com/tseemann/prokka)  
+
+

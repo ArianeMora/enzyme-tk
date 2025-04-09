@@ -4,21 +4,27 @@ Enzyme-tk is a collection of tools for enzyme engineering, setup as interoperabl
 
 ## Installation
 
+## Install base package to import modules
+
 ```bash
-source enzymetk/conda_envs/install_all.sh
+pip install enzymetk
 ```
 
-## Install subsets of enzyme-tk
+### Install only the specific requirements you need (recomended) 
 
+For this clone the repo and then install the requirements for the specific modules you use 
 ```bash
 git clone git@github.com:ArianeMora/enzyme-tk.git
-python setup.py sdist bdist_wheel
-pip install dist/enzymetk-0.0.1.tar.gz
+cd enzymetk/conda_envs/ # would recommend looking at thes
+# e.g. to install all from within that folder you would do
+source install_all.sh
 ```
 
 ## Usage
 
 If you have any issues at all just email me using my caltech email: `amora at caltech . edu`
+
+This is a work-in progress! 
 
 Here are some of the tools that have been implemented to be chained together as a pipeline:
 

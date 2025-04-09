@@ -1,8 +1,7 @@
 import sys
-sys.path.append('../enzymetk/')
 
-from steps.annotateEC_CREEP_step import CREEP
-from steps.save_step import Save
+from enzymetk.annotateEC_CREEP_step import CREEP
+from enzymetk.save_step import Save
 import pandas as pd
 
 # CREEP expects you to have downloaded the data from the zotero page and put it in the data/CREEP folder

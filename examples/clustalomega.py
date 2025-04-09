@@ -1,7 +1,6 @@
 import sys
-sys.path.append('../enzymetk/')
-from steps.generate_msa_step import ClustalOmega
-from steps.save_step import Save
+from enzymetk.generate_msa_step import ClustalOmega
+from enzymetk.save_step import Save
 import pandas as pd
 
 id_col = 'Entry'

@@ -24,7 +24,7 @@ class ActiveSitePred(Step):
         self.esm2_model = esm2_model
         self.tmp_dir = tmp_dir
 
-    def __to_fasta(self, df: pd.DataFrame, tmp_dir: str) -> pd.DataFrame:
+    def __to_fasta(self, df: pd.DataFrame, tmp_dir: str):
         tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
 
         input_filename = f'{tmp_dir}/as_inference_{tmp_label}.fasta'
@@ -34,7 +34,7 @@ class ActiveSitePred(Step):
                 fout.write(f'>{entry.strip()}\n{seq.strip()}\n')
         return input_filename
             
-    def __execute(self, df: pd.DataFrame, tmp_dir: str) -> pd.DataFrame:
+    def __execute(self, df: pd.DataFrame, tmp_dir: str):
         input_filename = self.__to_fasta(df, tmp_dir)
         # Might have an issue if the things are not correctly installed in the same dicrectory 
         result = subprocess.run(['python', Path(__file__).parent/'predict_catalyticsite_run.py', '--out', str(tmp_dir), 

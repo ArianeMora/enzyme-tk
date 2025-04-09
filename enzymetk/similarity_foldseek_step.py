@@ -83,8 +83,8 @@ class FoldSeek(Step):
                 cmd += pdb_files + [f'{tmp_dir}/clusterFolds', f'{tmp_dir}']
             else:
                 subcmd = ['foldseek', 'databases', 'ProstT5', 'weights', 'tmp']
+                self.run(subcmd)
                 subcmd = ['foldseek', 'createdb', f'{tmp_dir}/{tmp_label}_seqs.fasta', f'db_{tmp_label}', '--prostt5-model', 'weights']
-
                 self.run(subcmd)
                 cmd = ['foldseek', 'cluster']
 

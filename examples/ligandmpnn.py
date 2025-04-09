@@ -1,9 +1,8 @@
 
 import sys
-sys.path.append('../enzymetk/')
 
-from steps.inpaint_ligandMPNN_step import LigandMPNN
-from steps.save_step import Save
+from enzymetk.inpaint_ligandMPNN_step import LigandMPNN
+from enzymetk.save_step import Save
 import pandas as pd
 
 # id_col: str, seq_col: str, proteinfer_dir: str,

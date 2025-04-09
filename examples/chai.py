@@ -1,8 +1,6 @@
 import sys
-sys.path.append('../enzymetk/')
-
-from steps.dock_chai_step import Chai
-from steps.save_step import Save
+from enzymetk.dock_chai_step import Chai
+from enzymetk.save_step import Save
 import pandas as pd
 import os
 os.environ['MKL_THREADING_LAYER'] = 'GNU'

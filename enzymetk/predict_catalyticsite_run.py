@@ -11,7 +11,7 @@ def run_as_inference(output_dir, fasta_file, squidly_dir, toks_per_batch, as_thr
     elif esm2_model == "esm2_t48_15B_UR50D":
         cr_model_as = cr_model_as or f"{squidly_dir}Squidly_CL_15B.pt"
         lstm_model_as = lstm_model_as or f"{squidly_dir}Squidly_LSTM_15B.pth"
-    as_threshold = 0.99
+    as_threshold = 0.97
     #esm2_model = "esm2_t48_15B_UR50D"
     # 	python /scratch/project/squid/code_modular/SQUIDLY_run_model_LSTM.py ${FILE} ${ESM2_MODEL} ${CR_MODEL_AS}
     # ${LSTM_MODEL_AS} ${OUT} --toks_per_batch ${TOKS_PER_BATCH} --AS_threshold ${AS_THRESHOLD} --monitor

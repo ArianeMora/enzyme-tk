@@ -7,13 +7,17 @@ repo and then copy it out of it.
 """
 from enzymetk.step import Step
 
-
+import logging
 import pandas as pd
 import numpy as np
 from tempfile import TemporaryDirectory
 import subprocess
 import random
 import string
+from tqdm import tqdm 
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def process_clustering(filename, df, id_column_name):
@@ -34,13 +38,14 @@ def process_clustering(filename, df, id_column_name):
 class FoldSeek(Step):
     
     def __init__(self, id_column_name: str, query_column_name: str, reference_database: str, method='search', query_type='structures', 
-                 args=None, tmp_dir: str = None):
+                 args=None, num_threads=1, tmp_dir: str = None):
         self.query_column_name = query_column_name
         self.id_column_name = id_column_name
         self.reference_database = reference_database # pdb should be the default
         self.tmp_dir = tmp_dir
         self.method = method
         self.args = args
+        self.num_threads = num_threads
         self.query_type = query_type
         if self.method not in ['search', 'cluster']:
             print('Method must be in "search" or "cluster". Will likely fail... ')
@@ -107,8 +112,24 @@ class FoldSeek(Step):
         return df
     
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:
-        if self.tmp_dir is not None:
-            return self.__execute([df, self.tmp_dir])
         with TemporaryDirectory() as tmp_dir:
-            return self.__execute([df, tmp_dir])
-            return df
+            tmp_dir = self.tmp_dir if self.tmp_dir is not None else tmp_dir
+            if self.num_threads > 1:
+                output_filenames = []
+                df_list = np.array_split(df, self.num_threads)
+                for df_chunk in tqdm(df_list):
+                    try:
+                        output_filenames.append(self.__execute([df_chunk, tmp_dir]))
+                    except Exception as e:
+                         logger.error(f"Error in executing ESM2 model: {e}")
+                         continue
+                df = pd.DataFrame()
+                print(output_filenames)
+                for p in output_filenames:
+                    sub_df = pd.read_pickle(p)
+                    df = pd.concat([df, sub_df])
+                return df
+            
+            else:
+                output_filename = self.__execute([df, tmp_dir])
+                return pd.read_pickle(output_filename)

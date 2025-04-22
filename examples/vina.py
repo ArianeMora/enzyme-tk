@@ -16,4 +16,4 @@ rows = [['P0DP23', None, '1|2', 'TPP', 'MALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLAL
         ['P0DP24', None, '2|3', 'TPP', 'MALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAA', 'O=C(OC(C)C)NC1=CC=CC(Cl)=C1']]
 df = pd.DataFrame(rows, columns=[id_col, 'structure', 'residues', 'name', seq_col, substrate_col])
 # self, id_col: str, structure_col: str, sequence_col: str,  substrate_col: str, substrate_name_col: str, active_site_col: str, output_dir: str, num_threads: in
-df << (Vina(id_col, 'structure', seq_col, substrate_col, 'name', 'residues', 'tmp/', 2) >> Save(f'{output_dir}vina.pkl'))
+df << (Vina(id_col, 'structure', seq_col, substrate_col, 'name', 'residues', 'tmp/', 2) >> Save(f'{output_dir}vina.pkl'))q

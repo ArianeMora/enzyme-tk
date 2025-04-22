@@ -95,15 +95,12 @@ class BLAST(Step):
                          logger.error(f"Error in executing ESM2 model: {e}")
                          continue
                 df = pd.DataFrame()
-                print(output_filenames)
-                for p in output_filenames:
-                    sub_df = pd.read_pickle(p)
+                for sub_df in output_filenames:
                     df = pd.concat([df, sub_df])
                 return df
             
             else:
-                output_filename = self.__execute([df, tmp_dir])
-                return pd.read_pickle(output_filename)
+                return self.__execute([df, tmp_dir])
             
     # def execute(self, df: pd.DataFrame) -> pd.DataFrame:
     #     if self.tmp_dir is not None:

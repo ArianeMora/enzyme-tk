@@ -70,8 +70,8 @@ def extract_mean_embedding(df, id_column, encoding_dir, rep_num=33):
 
 class EmbedESM(Step):
     
-    def __init__(self, id_col: str, seq_col: str, model='esm2_t33_650M_UR50D', extraction_method='mean', 
-                 active_site_col: str = None, num_threads=1, tmp_dir: str = None, env_name: str = 'enzymetk'):
+    def __init__(self, id_col: str, seq_col: str, model='esm2_t36_3B_UR50D', extraction_method='mean', 
+                 active_site_col: str = None, num_threads=1, tmp_dir: str = None, env_name: str = 'enzymetk', rep_num=36):
         self.seq_col = seq_col
         self.id_col = id_col
         self.active_site_col = active_site_col
@@ -80,6 +80,7 @@ class EmbedESM(Step):
         self.extraction_method = extraction_method
         self.tmp_dir = tmp_dir
         self.env_name = env_name
+        self.rep_num = rep_num
 
     def __execute(self, df: pd.DataFrame, tmp_dir: str) -> pd.DataFrame:
         input_filename = f'{tmp_dir}/input.fasta'
@@ -95,11 +96,11 @@ class EmbedESM(Step):
         cmd = ['conda', 'run', '-n', self.env_name, 'python', Path(__file__).parent/'esm-extract.py', self.model, input_filename, tmp_dir, '--include', 'per_tok']
         self.run(cmd)
         if self.extraction_method == 'mean':
-            df = extract_mean_embedding(df, self.id_col, tmp_dir)
+            df = extract_mean_embedding(df, self.id_col, tmp_dir, rep_num=self.rep_num)
         elif self.extraction_method == 'active_site':
             if self.active_site_col is None:
                 raise ValueError('active_site_col must be provided if extraction_method is active_site')
-            df = extract_active_site_embedding(df, self.id_col, self.active_site_col, tmp_dir)
+            df = extract_active_site_embedding(df, self.id_col, self.active_site_col, tmp_dir, rep_num=self.rep_num)
         
         return df
     

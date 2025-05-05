@@ -2,6 +2,9 @@
 
 Enzyme-tk is a collection of tools for enzyme engineering, setup as interoperable modules that act on dataframes. These modules are designed to be imported into pipelines for specific function. For this reason, `steps` as each module is called (e.g. finding similar proteins with `BLAST` would be considered a step) are designed to be as light as possible. An example of a pipeline is the [annotate-e](https://github.com/ArianeMora/annotate-e)  ` pipeline, this acts to annotate a fasta with an ensemble of methods (each is designated as an Enzyme-tk step). 
 
+
+**If you have any issues installing, let me know - this has been tested only on Linux/Ubuntu. Please post an issue!**
+
 ## Installation
 
 ## Install base package to import modules
@@ -76,6 +79,8 @@ The steps are the main building blocks of the pipeline. They are responsible for
 ### BLAST
 
 BLAST is a tool for searching a database of sequences for similar sequences. Here you can either pass a database that you have already created or pass the sequences as part of your dataframe and pass the label column (this needs to have two values: reference and query) reference refers to sequences that you want to search against and query refers to sequences that you want to search for.
+
+Note you need to have installed the BLAST environment.
 
 ```python
 id_col = 'Entry'

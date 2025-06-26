@@ -1,22 +1,55 @@
 # A pipeline for enzyme engineering
 
+Enzyme-tk is a collection of tools for enzyme engineering, setup as interoperable modules that act on dataframes. These modules are designed to be imported into pipelines for specific function. For this reason, `steps` as each module is called (e.g. finding similar proteins with `BLAST` would be considered a step) are designed to be as light as possible. An example of a pipeline is the [annotate-e](https://github.com/ArianeMora/annotate-e)  ` pipeline, this acts to annotate a fasta with an ensemble of methods (each is designated as an Enzyme-tk step). 
+
+
+**If you have any issues installing, let me know - this has been tested only on Linux/Ubuntu. Please post an issue!**
+
 ## Installation
 
+## Install base package to import modules
+
 ```bash
-source enzymetk/conda_envs/install_all.sh
+pip install enzymetk
 ```
 
-## Install enzyme-tk
+### Install only the specific requirements you need (recomended) 
 
+For this clone the repo and then install the requirements for the specific modules you use 
 ```bash
 git clone git@github.com:ArianeMora/enzyme-tk.git
-python setup.py sdist bdist_wheel
-pip install dist/enzymetk-0.0.1.tar.gz
+cd enzymetk/conda_envs/ # would recommend looking at thes
+# e.g. to install all from within that folder you would do
+source install_all.sh
 ```
 
 ## Usage
 
 If you have any issues at all just email me using my caltech email: `amora at caltech . edu`
+
+This is a work-in progress! e.g. some tools (e.g. proteInfer and CLEAN) require extra data to be downloaded in order to run (like model weights.) I'm working on integrating these atm, buzz me if you need this!
+
+Here are some of the tools that have been implemented to be chained together as a pipeline:
+
+[boltz2](https://github.com/jwohlwend/boltz)
+[mmseqs2](https://github.com/soedinglab/mmseqs2)  
+[foldseek](https://github.com/steineggerlab/foldseek)  
+[diamond](https://github.com/bbuchfink/diamond)  
+[proteinfer](https://github.com/google-research/proteinfer)  
+[CLEAN](https://github.com/tttianhao/CLEAN)  
+[chai](https://github.com/chaidiscovery/chai-lab/)  
+[chemBERTa2](https://github.com/seyonechithrananda/bert-loves-chemistry)  
+[SELFormer](https://github.com/HUBioDataLab/SELFormer)  
+[rxnfp](https://github.com/rxn4chemistry/rxnfp)  
+[clustalomega](http://www.clustal.org/omega/)  
+[CREEP](https://github.com/jsunn-y/CARE)  
+[esm](https://github.com/facebookresearch/esm)  
+[LigandMPNN](https://github.com/dauparas/LigandMPNN)  
+[vina](https://vina.scripps.edu/)  
+[Uni-Mol](https://github.com/deepmodeling/Uni-Mol)  
+[fasttree](https://morgannprice.github.io/fasttree/)  
+[Porechop](https://github.com/rrwick/Porechop)  
+[prokka](https://github.com/tseemann/prokka)  
 
 ## Things to note
 
@@ -49,6 +82,8 @@ The steps are the main building blocks of the pipeline. They are responsible for
 
 BLAST is a tool for searching a database of sequences for similar sequences. Here you can either pass a database that you have already created or pass the sequences as part of your dataframe and pass the label column (this needs to have two values: reference and query) reference refers to sequences that you want to search against and query refers to sequences that you want to search for.
 
+Note you need to have installed the BLAST environment.
+
 ```python
 id_col = 'Entry'
 seq_col = 'Sequence'
@@ -78,6 +113,34 @@ print(df)
 df << (ActiveSitePred(id_col, seq_col, squidly_dir, num_threads) >> Save('tmp/squidly_as_pred.pkl'))
 
 ```
+### Boltz2
+
+Boltz2 is a model for predicting structures. Note you need docko installed as I run via that.
+
+Below is an example using boltz with 4 threads, and uses a cofactor (intermediate in this case). Just set to be None for a single substrate version.
+```
+import sys
+from enzymetk.dock_boltz_step import Boltz
+from enzymetk.save_step import Save
+import pandas as pd
+import os
+os.environ['MKL_THREADING_LAYER'] = 'GNU'
+
+output_dir = 'tmp/'
+num_threads = 4
+id_col = 'Entry'
+seq_col = 'Sequence'
+substrate_col = 'Substrate'
+intermediate_col = 'Intermediate'
+
+rows = [['P0DP23_boltz_8999', 'MALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAA', 'CCCCC(CC)COC(=O)C1=CC=CC=C1C(=O)OCC(CC)CCCC', 'CC1=C(C2=CC3=C(C(=C([N-]3)C=C4C(=C(C(=N4)C=C5C(=C(C(=N5)C=C1[N-]2)C)C=C)C)C=C)C)CCC(=O)[O-])CCC(=O)[O-].[Fe]'], 
+        ['P0DP24_boltz_p1', 'MALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAA', 'CCCCC(CC)COC(=O)C1=CC=CC=C1C(=O)OCC(CC)CCCC', 'CC1=C(C2=CC3=C(C(=C([N-]3)C=C4C(=C(C(=N4)C=C5C(=C(C(=N5)C=C1[N-]2)C)C=C)C)C=C)C)CCC(=O)[O-])CCC(=O)[O-].[Fe]'],
+        ['P0DP23_boltz_p2', 'MALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAA', 'CCCCC(CC)COC(=O)C1=CC=CC=C1C(=O)OCC(CC)CCCC', 'CC1=C(C2=CC3=C(C(=C([N-]3)C=C4C(=C(C(=N4)C=C5C(=C(C(=N5)C=C1[N-]2)C)C=C)C)C=C)C)CCC(=O)[O-])CCC(=O)[O-].[Fe]'], 
+        ['P0DP24_boltz_p3', 'MALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAA', 'CCCCC(CC)COC(=O)C1=CC=CC=C1C(=O)OCC(CC)CCCC', 'CC1=C(C2=CC3=C(C(=C([N-]3)C=C4C(=C(C(=N4)C=C5C(=C(C(=N5)C=C1[N-]2)C)C=C)C)C=C)C)CCC(=O)[O-])CCC(=O)[O-].[Fe]'],
+        ['P0DP24_boltz_p4', 'MALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAA', 'CCCCC(CC)COC(=O)C1=CC=CC=C1C(=O)OCC(CC)CCCC', 'CC1=C(C2=CC3=C(C(=C([N-]3)C=C4C(=C(C(=N4)C=C5C(=C(C(=N5)C=C1[N-]2)C)C=C)C)C=C)C)CCC(=O)[O-])CCC(=O)[O-].[Fe]']]
+df = pd.DataFrame(rows, columns=[id_col, seq_col, substrate_col, intermediate_col])
+df << (Boltz(id_col, seq_col, substrate_col, intermediate_col, f'{output_dir}', num_threads) >> Save(f'{output_dir}test.pkl'))
+```
 
 ### Chai
 
@@ -104,8 +167,8 @@ df << (Chai(id_col, seq_col, substrate_col, f'{output_dir}', num_threads) >> Sav
 ChemBERTa2 encodes reactions and SMILES strings into a vector space. Note this requires the base environment, i.e. `enzymetk` conda env.
 
 ```python
-from steps.embedchem_chemberta_step import ChemBERT
-from steps.save_step import Save
+from enzymetk.embedchem_chemberta_step import ChemBERT
+from enzymetk.save_step import Save
 
 output_dir = 'tmp/'
 num_threads = 1
@@ -115,7 +178,7 @@ substrate_col = 'Substrate'
 rows = [['P0DP23', 'MALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAA', 'CCCCC(CC)COC(=O)C1=CC=CC=C1C(=O)OCC(CC)CCCC'], 
         ['P0DP24', 'MALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAAMALWMRLLPLLALLALWGPDPAAA', 'CCCCC(CC)COC(=O)C1=CC=CC=C1C(=O)OCC(CC)CCCC']]
 df = pd.DataFrame(rows, columns=[id_col, seq_col, substrate_col])
-df << (ChemBERT(id_col, substrate_col, num_threads) >> Save(f'{output_dir}chemberta.pkl'))
+new_df = (df << (ChemBERT(id_col, substrate_col, num_threads) >> Save(f'{output_dir}chemberta.pkl')))
 ```
 
 ### CLEAN
@@ -141,11 +204,11 @@ df << (CLEAN(id_col, seq_col, clean_dir, num_threads=num_threads) >> Save(f'clea
 ```
 ### ClustalOmega
 
-ClustalOmega is a tool for aligning a set of sequences. This gets installed to the system (expecting a linux machine) and added to the bash path.
+ClustalOmega is a tool for aligning a set of sequences. This gets installed to the system (expecting a linux machine) and added to the bash path. You need to have installed it first (check out the `conda_envs` directory in enzymetk.)
 
 ```python
-from steps.generate_msa_step import ClustalOmega
-from steps.save_step import Save
+from enzymetk.generate_msa_step import ClustalOmega
+from enzymetk.save_step import Save
 import pandas as pd
 
 id_col = 'Entry'
@@ -165,8 +228,8 @@ df << (ClustalOmega(id_col, seq_col) >> Save('tmp/clustalomega_test.pkl'))
 CREEP is a tool for predicting the EC number of a reaction. At the moment it only supports reactions to EC however we are extending this to other modalities. 
 
 ```python
-from steps.annotateEC_CREEP_step import CREEP
-from steps.save_step import Save
+from enzymetk.annotateEC_CREEP_step import CREEP
+from enzymetk.save_step import Save
 import pandas as pd
 
 # CREEP expects you to have downloaded the data from the zotero page and put it in the data/CREEP folder
@@ -187,8 +250,8 @@ df << (CREEP(id_col, reaction_col, CREEP_cache_dir='/disk1/share/software/CREEP/
 EmbedESM is a tool for embedding a set of sequences using ESM2.
 
 ```python
-from steps.embedprotein_esm_step import EmbedESM
-from steps.save_step import Save
+from enzymetk.embedprotein_esm_step import EmbedESM
+from enzymetk.save_step import Save
 import pandas as pd
 
 id_col = 'Entry'
@@ -215,8 +278,8 @@ If you pass a database, you need to pass the path to the database.
 The columns expect a path to a pdb file i.e. the output from the `Chai` step.
 
 ```python
-from steps.similarity_foldseek_step import FoldSeek
-from steps.save_step import Save
+from enzymetk.similarity_foldseek_step import FoldSeek
+from enzymetk.save_step import Save
 import pandas as pd
 
 # id_col: str, seq_col: str, proteinfer_dir: str,
@@ -279,3 +342,27 @@ df = pd.DataFrame(rows, columns=[id_col, seq_col, substrate_col])
 proteinfer_dir = 'software/proteinfer/'
 df << (ProteInfer(id_col, seq_col, proteinfer_dir, num_threads=num_threads) >> Save(f'proteinfer.pkl'))
 ```
+
+## Tools and references
+Being a toolkit this is a collection of other tools, which means if you use any of these tools then cite the ones relevant to your work:
+
+[mmseqs2](https://github.com/soedinglab/mmseqs2)  
+[foldseek](https://github.com/steineggerlab/foldseek)  
+[diamond](https://github.com/bbuchfink/diamond)  
+[proteinfer](https://github.com/google-research/proteinfer)  
+[CLEAN](https://github.com/tttianhao/CLEAN)  
+[chai](https://github.com/chaidiscovery/chai-lab/)  
+[chemBERTa2](https://github.com/seyonechithrananda/bert-loves-chemistry)  
+[SELFormer](https://github.com/HUBioDataLab/SELFormer)  
+[rxnfp](https://github.com/rxn4chemistry/rxnfp)  
+[clustalomega](http://www.clustal.org/omega/)  
+[CREEP](https://github.com/jsunn-y/CARE)  
+[esm](https://github.com/facebookresearch/esm)  
+[LigandMPNN](https://github.com/dauparas/LigandMPNN)  
+[vina](https://vina.scripps.edu/)  
+[Uni-Mol](https://github.com/deepmodeling/Uni-Mol)  
+[fasttree](https://morgannprice.github.io/fasttree/)  
+[Porechop](https://github.com/rrwick/Porechop)  
+[prokka](https://github.com/tseemann/prokka)  
+
+

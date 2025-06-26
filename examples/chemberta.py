@@ -1,8 +1,5 @@
-import sys
-sys.path.append('../enzymetk/')
-
-from steps.embedchem_chemberta_step import ChemBERT
-from steps.save_step import Save
+from enzymetk.embedchem_chemberta_step import ChemBERT
+from enzymetk.save_step import Save
 import pandas as pd
 import os
 os.environ['MKL_THREADING_LAYER'] = 'GNU'

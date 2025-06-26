@@ -8,12 +8,16 @@ import subprocess
 u = SciUtil()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+ 
 
 class Pipeline():
     
     def __init__(self, *steps: Step):
         self.steps = list(steps)
         
+    def __rshift__(self, other: Step) -> Step:
+        return Pipeline(*self.steps, other)
+                        
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:
         """ 
         Execute some shit.

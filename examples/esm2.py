@@ -1,8 +1,7 @@
 import sys
-sys.path.append('../enzymetk/')
 
-from steps.embedprotein_esm_step import EmbedESM
-from steps.save_step import Save
+from enzymetk.embedprotein_esm_step import EmbedESM
+from enzymetk.save_step import Save
 import pandas as pd
 
 id_col = 'Entry'

@@ -1,8 +1,7 @@
 import sys
-sys.path.append('../enzymetk/')
 
-from steps.similarity_substrate import SubstrateDist
-from steps.save_step import Save
+from enzymetk.similarity_substrate import SubstrateDist
+from enzymetk.save_step import Save
 import pandas as pd
 import os
 

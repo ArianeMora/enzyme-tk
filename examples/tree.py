@@ -1,5 +1,5 @@
-from steps.generate_tree_step import FastTree
-from steps.save_step import Save
+from enzymetk.generate_tree_step import FastTree
+from enzymetk.save_step import Save
 import pandas as pd
 import logging
 

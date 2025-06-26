@@ -1,8 +1,7 @@
 import sys
-sys.path.append('../enzymetk/')
 
-from steps.annotateEC_CREEP_step import CREEP
-from steps.save_step import Save
+from enzymetk.annotateEC_CREEP_step import CREEP
+from enzymetk.save_step import Save
 import pandas as pd
 
 # CREEP expects you to have downloaded the data from the zotero page and put it in the data/CREEP folder
@@ -14,5 +13,5 @@ df = pd.DataFrame({'EC number': ['1.1.1.1', '1.1.1.2'],
 id_col = 'Entry'
 reaction_col = 'Reaction'
 
-df << (CREEP(id_col, reaction_col, CREEP_cache_dir='/disk1/share/software/CREEP/data/', CREEP_dir='/disk1/share/software/CREEP/',
+df << (CREEP(id_col, reaction_col, CREEP_cache_dir='/disk4/share/software/CREEP/data/', CREEP_dir='/disk4/share/software/CREEP/',
             modality='reaction', reference_modality='protein') >> Save(f'{output_dir}CREEP_test_protein.pkl'))

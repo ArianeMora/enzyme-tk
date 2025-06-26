@@ -1,8 +1,7 @@
 import sys
-sys.path.append('../enzymetk/')
 
-from steps.similarity_mmseqs_step import MMseqs
-from steps.save_step import Save
+from enzymetk.similarity_mmseqs_step import MMseqs
+from enzymetk.save_step import Save
 import pandas as pd
 
 

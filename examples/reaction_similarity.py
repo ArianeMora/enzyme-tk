@@ -1,8 +1,7 @@
 import sys
-sys.path.append('../enzymetk/')
 
-from steps.similarity_reaction import ReactionDist
-from steps.save_step import Save
+from enzymetk.similarity_reaction_step import ReactionDist
+from enzymetk.save_step import Save
 import pandas as pd
 import os
 

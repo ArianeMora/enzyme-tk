@@ -89,11 +89,16 @@ class CLEAN(Step):
             cmd.extend(self.args)
         self.run(cmd)
         # Copy across the results file
-        df = pd.read_csv(f'{self.clean_dir}results/inputs/{tmp_label}_maxsep.csv', header=None)
+        df = pd.read_csv(f'{self.clean_dir}results/inputs/{tmp_label}_maxsep.csv', header=None, sep='\t')
         cmd = ['rm', f'{self.clean_dir}data/inputs/{tmp_label}.fasta']
         self.run(cmd)
         cmd = ['rm', f'{self.clean_dir}results/inputs/{tmp_label}_maxsep.csv']
-        self.run(cmd)        
+        self.run(cmd)   
+        
+        # Change back to the current folder     
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        os.chdir(dir_path)
+        
         return df
     
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -111,7 +116,7 @@ class CLEAN(Step):
                 print(output_filenames)
                 for sub_df in output_filenames:
                     df = pd.concat([df, sub_df])
-                return df
+                return self.__filter_df(df)
             else:
-                return self.__execute([df, tmp_dir])
+                return self.__filter_df(self.__execute([df, tmp_dir]))
                 return df

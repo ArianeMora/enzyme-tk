@@ -3,6 +3,7 @@ Step to run multiple sequence alignment with the Clustal Omega tool.
  ./clustalo -i /home/helen/degradeo/pipeline/helen_data/sequences_test_fasta.txt
 """
 from enzymetk.step import Step
+import logging
 
 import pandas as pd
 import numpy as np
@@ -12,10 +13,17 @@ import os
 import subprocess
 import random
 import string
+from tqdm import tqdm 
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 
 class BLAST(Step):
     
-    def __init__(self, id_col: str, sequence_col: str, label_col=None, database=None, mode='blastp', args=None, tmp_dir=None):
+    def __init__(self, id_col: str, sequence_col: str, label_col=None, database=None,
+                 mode='blastp', args=None, tmp_dir=None, num_threads=1):
         self.id_col = id_col
         self.seq_col = sequence_col
         self.label_col = label_col  # This is whether it is query or reference
@@ -23,6 +31,7 @@ class BLAST(Step):
         self.database = database
         self.args = args
         self.tmp_dir = tmp_dir
+        self.num_threads = num_threads
         if self.database is None and self.label_col is None:
             raise ValueError('Database is not set, you can pass a database that you have already created see diamond for more information or the sequences \
                              as part of your dataframe and pass the label column (this needs to have two values: reference and query) reference \
@@ -74,7 +83,27 @@ class BLAST(Step):
         return df
 
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:
-        if self.tmp_dir is not None:
-            return self.__execute([df, self.tmp_dir])
         with TemporaryDirectory() as tmp_dir:
-            return self.__execute([df, tmp_dir])
+            tmp_dir = self.tmp_dir if self.tmp_dir is not None else tmp_dir
+            if self.num_threads > 1:
+                output_filenames = []
+                df_list = np.array_split(df, self.num_threads)
+                for df_chunk in tqdm(df_list):
+                    try:
+                        output_filenames.append(self.__execute([df_chunk, tmp_dir]))
+                    except Exception as e:
+                         logger.error(f"Error in executing ESM2 model: {e}")
+                         continue
+                df = pd.DataFrame()
+                for sub_df in output_filenames:
+                    df = pd.concat([df, sub_df])
+                return df
+            
+            else:
+                return self.__execute([df, tmp_dir])
+            
+    # def execute(self, df: pd.DataFrame) -> pd.DataFrame:
+    #     if self.tmp_dir is not None:
+    #         return self.__execute([df, self.tmp_dir])
+    #     with TemporaryDirectory() as tmp_dir:
+    #         return self.__execute([df, tmp_dir])

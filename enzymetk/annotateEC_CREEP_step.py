@@ -38,7 +38,7 @@ class CREEP(Step):
         self.args_extract = args_extract
         self.args_retrieval = args_retrieval
             
-    def __execute(self, df: pd.DataFrame, tmp_dir: str) -> pd.DataFrame:
+    def __execute(self, df: pd.DataFrame, tmp_dir: str):
         tmp_dir = '/disk1/ariane/vscode/degradeo/pipeline/tmp/'
         input_filename = f'{tmp_dir}/creepasjkdkajshdkja.csv'
         df.to_csv(input_filename, index=False)

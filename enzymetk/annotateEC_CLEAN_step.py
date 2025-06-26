@@ -116,7 +116,7 @@ class CLEAN(Step):
                 print(output_filenames)
                 for sub_df in output_filenames:
                     df = pd.concat([df, sub_df])
-                return df
+                return self.__filter_df(df)
             else:
-                return self.__execute([df, tmp_dir])
+                return self.__filter_df(self.__execute([df, tmp_dir]))
                 return df

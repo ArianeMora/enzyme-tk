@@ -13,5 +13,5 @@ df = pd.DataFrame({'EC number': ['1.1.1.1', '1.1.1.2'],
 id_col = 'Entry'
 reaction_col = 'Reaction'
 
-df << (CREEP(id_col, reaction_col, CREEP_cache_dir='/disk1/share/software/CREEP/data/', CREEP_dir='/disk1/share/software/CREEP/',
+df << (CREEP(id_col, reaction_col, CREEP_cache_dir='/disk4/share/software/CREEP/data/', CREEP_dir='/disk4/share/software/CREEP/',
             modality='reaction', reference_modality='protein') >> Save(f'{output_dir}CREEP_test_protein.pkl'))

@@ -1,3 +1,7 @@
+import sys 
+
+sys.path.append('/home/helen/enzyme-tk')
+
 from enzymetk.step import Step
 import pandas as pd
 from tempfile import TemporaryDirectory

@@ -31,6 +31,7 @@ This is a work-in progress! e.g. some tools (e.g. proteInfer and CLEAN) require 
 
 Here are some of the tools that have been implemented to be chained together as a pipeline:
 
+[boltz2](https://github.com/jwohlwend/boltz)
 [mmseqs2](https://github.com/soedinglab/mmseqs2)  
 [foldseek](https://github.com/steineggerlab/foldseek)  
 [diamond](https://github.com/bbuchfink/diamond)  
@@ -49,6 +50,7 @@ Here are some of the tools that have been implemented to be chained together as 
 [fasttree](https://morgannprice.github.io/fasttree/)  
 [Porechop](https://github.com/rrwick/Porechop)  
 [prokka](https://github.com/tseemann/prokka)  
+
 ## Things to note
 
 All the tools use the conda env of `enzymetk` by default.

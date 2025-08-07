@@ -24,25 +24,26 @@ class ReactionDist(Step):
         self.num_threads = num_threads
         
     def __execute(self, data: list) -> np.array:
-        reaction_df = data
-        tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
-        fp_params = rdChemReactions.ReactionFingerprintParams()
-        rxn = rdChemReactions.ReactionFromSmarts(self.smiles_string)
-        rxn_fp = rdChemReactions.CreateStructuralFingerprintForReaction(rxn, ReactionFingerPrintParams=fp_params)
+        reaction_df = data        
         rows = []
         # compare all fp pairwise without duplicates
         for smile_id, smiles in tqdm(reaction_df[[self.id_column_name, self.smiles_column_name]].values): # -1 so the last fp will not be used
             mol_ = rdChemReactions.ReactionFromSmarts(smiles)
+            fp_params = rdChemReactions.ReactionFingerprintParams()
             # Note: if you don't pass , ReactionFingerPrintParams=fp_params you get different results
             # i.e. reactions that don't appear to be the same are reported as similar of 1.0
             # https://github.com/rdkit/rdkit/discussions/5263
+            rxn = rdChemReactions.ReactionFromSmarts(self.smiles_string)
+
+            rxn_fp = rdChemReactions.CreateStructuralFingerprintForReaction(rxn, ReactionFingerPrintParams=fp_params)
             fps = rdChemReactions.CreateStructuralFingerprintForReaction(mol_, ReactionFingerPrintParams=fp_params)
-            rows.append([smile_id, 
+            rows.append([smile_id,
+                         self.smiles_string, 
                          smiles, 
                          DataStructs.TanimotoSimilarity(fps, rxn_fp), 
                          DataStructs.RusselSimilarity(fps, rxn_fp), 
                          DataStructs.CosineSimilarity(fps, rxn_fp)])
-        distance_df = pd.DataFrame(rows, columns=[self.id_column_name, 'TargetSmiles', 'TanimotoSimilarity', 'RusselSimilarity', 'CosineSimilarity'])
+        distance_df = pd.DataFrame(rows, columns=[self.id_column_name, 'QuerySmiles', 'TargetSmiles', 'TanimotoSimilarity', 'RusselSimilarity', 'CosineSimilarity'])
         return distance_df
         
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:

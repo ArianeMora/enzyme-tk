@@ -125,11 +125,10 @@ class FoldSeek(Step):
                          continue
                 df = pd.DataFrame()
                 print(output_filenames)
-                for p in output_filenames:
-                    sub_df = pd.read_pickle(p)
+                for sub_df in output_filenames:
                     df = pd.concat([df, sub_df])
                 return df
             
             else:
-                output_filename = self.__execute([df, tmp_dir])
-                return pd.read_pickle(output_filename)
+                df = self.__execute([df, tmp_dir])
+                return df

@@ -36,8 +36,9 @@ class Step():
         """ Execute some shit """ 
         return df
     
-    def run(self, cmd: list) -> None:
-        """ Run a command """
+    def run(self, cmd: list):
+        """ Run a command """   
+        result = None
         start = timeit.default_timer()
         u.dp(['Running command', ' '.join([str(c) for c in cmd])])
         result = subprocess.run(cmd, capture_output=True, text=True)       
@@ -48,8 +49,9 @@ class Step():
             logger.error(result.stderr)
         logger.info(result.stdout)
         u.dp(['Time for command to run (min): ', (timeit.default_timer() - start)/60])
+        return result
 
-    def __rshift__(self, other: Step) -> Step:
+    def __rshift__(self, other: Step)   :
         return Pipeline(self, other)
         
     def __rlshift__(self, other: pd.DataFrame) -> pd.DataFrame:

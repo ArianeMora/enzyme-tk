@@ -1,3 +1,6 @@
+import sys
+
+sys.path.append('../enzymetk/')
 from enzymetk.predict_catalyticsite_step import ActiveSitePred
 from enzymetk.save_step import Save
 import pandas as pd
@@ -15,4 +18,4 @@ rows = [['AXE2', 'MKIGSGEKLLFIGDSITDCGRARPEGEGSFGALGTGYVAYVVGLLQAVYPELGIRVVNKGIS
         ['H7C0D0', 'XRAHREIKDIFYKAIQKRRQSQEKIDDILQTLLDATYKDGRPLTDDEVAGMLIGLLLAGQHTSSTTSAWMGFFLARDKTLQKKCYLEQKTVCGENLPPLTYDQLKDLNLLDRCIKETLRLRPPIMIMMRMARTPQTVAGYTIPPGHQDNPASGEKFAYVPFGAGRHRCIGENFAYVQIKTIWSTMLRLYEFDLIDGYFPTVNYTTMIHTPENPVIRYKRRSK']]
 df = pd.DataFrame(rows, columns=[id_col, seq_col])
 print(df)
-df << (ActiveSitePred(id_col, seq_col, squidly_dir, num_threads) >> Save('tmp/squidly_as_pred.pkl'))
+df << (ActiveSitePred(id_col, seq_col, num_threads, tmp_dir='tmp/') >> Save('tmp/squidly_as_pred_XXXX.pkl'))

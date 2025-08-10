@@ -8,6 +8,8 @@ import numpy as np
 from tqdm import tqdm
 import random
 import string
+import logging
+import os
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -15,15 +17,17 @@ logger.setLevel(logging.INFO)
     
 class ActiveSitePred(Step):
     
-    def __init__(self, id_col: str, seq_col: str, squidly_dir: str, num_threads: int = 1, 
-                 esm2_model = 'esm2_t36_3B_UR50D', tmp_dir: str = None):
+    def __init__(self, id_col: str, seq_col: str, num_threads: int = 1, 
+                 esm2_model = 'esm2_t36_3B_UR50D', tmp_dir: str = None, args=None):
         self.id_col = id_col
         self.seq_col = seq_col  
         self.num_threads = num_threads or 1
-        self.squidly_dir = squidly_dir
         self.esm2_model = esm2_model
         self.tmp_dir = tmp_dir
-
+        self.args = None
+        self.logger = logging.getLogger(__name__)
+        print('Predicting Active Sites using Squidly')
+        
     def __to_fasta(self, df: pd.DataFrame, tmp_dir: str):
         tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
 
@@ -37,13 +41,17 @@ class ActiveSitePred(Step):
     def __execute(self, df: pd.DataFrame, tmp_dir: str):
         input_filename = self.__to_fasta(df, tmp_dir)
         # Might have an issue if the things are not correctly installed in the same dicrectory 
-        result = subprocess.run(['python', Path(__file__).parent/'predict_catalyticsite_run.py', '--out', str(tmp_dir), 
-                                '--input', input_filename, '--squidly_dir', self.squidly_dir, '--esm2_model', self.esm2_model], capture_output=True, text=True)
-        output_filename = f'{input_filename.replace(".fasta", "_results.pkl")}'
+        cmd = []
+        cmd = ['squidly', 'run', input_filename, self.esm2_model, tmp_dir]
+        if self.args is not None:
+            cmd.extend(self.args)
+        result = self.run(cmd)
         if result.stderr:
-            logger.error(result.stderr)
-        logger.info(result.stdout)   
-        
+            self.logger.error(result.stderr)
+            print(result.stderr)
+        else:
+            self.logger.info(result.stdout)
+        output_filename = os.path.join(tmp_dir, 'squidly_ensemble.csv')
         return output_filename
     
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -61,10 +69,10 @@ class ActiveSitePred(Step):
                 df = pd.DataFrame()
                 print(output_filenames)
                 for p in output_filenames:
-                    sub_df = pd.read_pickle(p)
+                    sub_df = pd.read_csv(p)
                     df = pd.concat([df, sub_df])
                 return df
             
             else:
                 output_filename = self.__execute(df, tmp_dir)
-                return pd.read_pickle(output_filename)
+                return pd.read_csv(output_filename)

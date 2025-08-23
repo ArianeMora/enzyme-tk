@@ -4,7 +4,8 @@
 
 I tried to keep it as simple as possible however, this expects to be working off a linux machine.
 ```bash
-./enzymetk/conda_envs/install_all.sh
+cd enzymetk/conda_envs
+./install_all.sh
 ```
 
 If you get a permission denied you may have to run the following:

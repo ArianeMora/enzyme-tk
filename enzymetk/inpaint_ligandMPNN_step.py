@@ -16,7 +16,8 @@ import os
 
 class LigandMPNN(Step):
     
-    def __init__(self, pdb_column_name: str, ligand_mpnn_dir: str, output_dir: str, tmp_dir: str = None, args=None, num_threads: int = 1, env_name: str = 'ligandmpnn_env'):
+    def __init__(self, pdb_column_name: str, ligand_mpnn_dir: str, output_dir: str, 
+                 tmp_dir: str = None, args=None, num_threads: int = 1, env_name: str = 'ligandmpnn_env'):
         self.pdb_column_name = pdb_column_name
         self.ligand_mpnn_dir = ligand_mpnn_dir
         self.output_dir = output_dir
@@ -34,7 +35,7 @@ class LigandMPNN(Step):
         os.chdir(self.ligand_mpnn_dir)
         
         for pdb_file in df[ self.pdb_column_name].values:
-            cmd = ['conda', 'run', '-n', self.env_name, 'python3', f'{self.ligand_mpnn_dir}run.py', '--pdb_path', pdb_file,  '--out_folder', f'{self.output_dir}']
+            cmd = ['conda', 'run', '-n', self.env_name, 'python3', f'{self.ligand_mpnn_dir}run.py', '--pdb_path', pdb_file,  '--out_folder', f'{self.output_dir}'] 
             if self.args is not None:
                 cmd.extend(self.args)
             result = subprocess.run(cmd, check=True)

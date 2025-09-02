@@ -26,16 +26,16 @@ class ReactionDist(Step):
     def __execute(self, data: list) -> np.array:
         reaction_df = data        
         rows = []
+        fp_params = rdChemReactions.ReactionFingerprintParams()
+        rxn = rdChemReactions.ReactionFromSmarts(self.smiles_string)
+        rxn_fp = rdChemReactions.CreateStructuralFingerprintForReaction(rxn, ReactionFingerPrintParams=fp_params) #rdChemReactions.CreateStructuralFingerprintForReaction(rxn, ReactionFingerPrintParams=fp_params)
+
         # compare all fp pairwise without duplicates
         for smile_id, smiles in tqdm(reaction_df[[self.id_column_name, self.smiles_column_name]].values): # -1 so the last fp will not be used
             mol_ = rdChemReactions.ReactionFromSmarts(smiles)
-            fp_params = rdChemReactions.ReactionFingerprintParams()
             # Note: if you don't pass , ReactionFingerPrintParams=fp_params you get different results
             # i.e. reactions that don't appear to be the same are reported as similar of 1.0
             # https://github.com/rdkit/rdkit/discussions/5263
-            rxn = rdChemReactions.ReactionFromSmarts(self.smiles_string)
-
-            rxn_fp = rdChemReactions.CreateStructuralFingerprintForReaction(rxn, ReactionFingerPrintParams=fp_params)
             fps = rdChemReactions.CreateStructuralFingerprintForReaction(mol_, ReactionFingerPrintParams=fp_params)
             rows.append([smile_id,
                          self.smiles_string, 

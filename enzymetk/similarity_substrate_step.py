@@ -1,3 +1,5 @@
+import sys
+sys.path.append('/disk1/ariane/vscode/enzyme-tk/')
 from enzymetk.step import Step
 import pandas as pd
 import numpy as np
@@ -8,6 +10,7 @@ from rdkit.Chem import rdChemReactions
 import pandas as pd
 import os
 from rdkit.DataStructs import FingerprintSimilarity
+from rdkit.Chem import rdFingerprintGenerator
 from rdkit.Chem.Fingerprints import FingerprintMols
 import random
 import string
@@ -28,12 +31,15 @@ class SubstrateDist(Step):
         tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
         
         rxn = Chem.MolFromSmiles(self.smiles_string)
-        rxn_fp = FingerprintMols.FingerprintMol(rxn)
+        # Switched to using morgan fingerprints https://greglandrum.github.io/rdkit-blog/posts/2023-01-18-fingerprint-generator-tutorial.html
+        # followed this tutorial
+        mfpgen = rdFingerprintGenerator.GetMorganGenerator(radius=2,fpSize=2048)
+        rxn_fp = mfpgen.GetFingerprint(rxn)
         rows = []
         # compare all fp pairwise without duplicates
         for smile_id, smiles in tqdm(reaction_df[[self.id_column_name, self.smiles_column_name]].values): # -1 so the last fp will not be used
             mol_ = Chem.MolFromSmiles(smiles)
-            fps = FingerprintMols.FingerprintMol(mol_)
+            fps = mfpgen.GetFingerprint(mol_)
             rows.append([smile_id, 
                          smiles, 
                          DataStructs.TanimotoSimilarity(fps, rxn_fp), 

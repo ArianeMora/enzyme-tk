@@ -1,21 +1,12 @@
 #!/bin/bash
 # The base enzymetk env which works with most tools
-conda create --name enzymetk python==3.11.8 -y
-# Doesn't like working with conda init
-# Doesn't like working with conda init
+conda create --name enzymetk -y
+# Doesn't like working with mamba init
+# Doesn't like working with mamba init
 CONDA_BASE=$(conda info --base)
 source $CONDA_BASE/etc/profile.d/conda.sh
 
 conda activate enzymetk
 
-conda install pytorch::faiss-gpu -y
-conda install -c conda-forge pyarrow -y
-pip install transformers
-
-# INstall requirements for docko
-conda install -c conda-forge pdbfixer -y
-conda config --env --add channels conda-forge
-pip install git+https://github.com/chaidiscovery/chai-lab.git
-pip install docko
 # Do this at the end so it forces certain versions like pandas
-pip install -r base_requirements.txt
+uv pip install -r base_requirements.txt

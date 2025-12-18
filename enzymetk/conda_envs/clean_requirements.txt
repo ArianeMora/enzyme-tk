@@ -5,3 +5,4 @@ scikit_learn==1.2.0
 scipy==1.7.3
 tqdm==4.64.0
 fair-esm==2.0.0
+setuptools

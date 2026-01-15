@@ -61,17 +61,13 @@ setup(name='enzymetk',
               'enzymetk = enzymetk.__main__:main'
           ]
       },
-      install_requires=['fair-esm',
+      install_requires=[
                         'scikit-learn',
                         'numpy',
                         'seaborn',
                         'sciutil',
-                        'pandas==2.1.4',
-                        'biopython',
-                        'sentence_transformers',
-                        'pubchempy',
-                        'pyfaidx',
-                        'spacy'],
+                        'pandas',
+                        'biopython'],
       python_requires='>=3.8',
       data_files=[("", ["LICENSE"])]
       )

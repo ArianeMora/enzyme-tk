@@ -11,7 +11,6 @@ import logging
 import pandas as pd
 import numpy as np
 from tempfile import TemporaryDirectory
-import subprocess
 import random
 import string
 from tqdm import tqdm 

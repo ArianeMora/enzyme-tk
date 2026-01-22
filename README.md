@@ -273,7 +273,7 @@ Either in your own conda env: `pip install esm-fair` or you can run:
 id_col = 'Entry'
 seq_col = 'Sequence'
 label_col = 'ActiveSite'
-esm = EmbedESM(id_col, seq_col, extraction_method='mean', tmp_dir='tmp', rep_num=36)
+esm = EmbedESM(id_col, seq_col, extraction_method='mean', tmp_dir='tmp', rep_num=36) # i.e. the representation number you want usually the last layer 
 esm.install() # And follow the instructions to activate the env
 ```
 

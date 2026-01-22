@@ -27,7 +27,7 @@ class RxnFP(Step):
         output_filename = f'{tmp_dir}/rxnfp_{tmp_label}.pkl'
         input_filename = f'{tmp_dir}/input_{tmp_label}.csv'
         df.to_csv(input_filename, index=False)
-        cmd = ['conda', 'run', '-n', self.env_name, 'python', Path(__file__).parent/'embedchem_rxnfp_run.py', '--out', output_filename, 
+        cmd = ['python', Path(__file__).parent/'embedchem_rxnfp_run.py', '--out', output_filename, 
                                 '--input', input_filename, '--label', self.value_col]
         self.run(cmd)
         # Might have an issue if the things are not correctly installed in the same dicrectory 

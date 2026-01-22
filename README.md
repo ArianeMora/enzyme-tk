@@ -13,6 +13,20 @@ Enzyme-tk is a collection of tools for enzyme engineering, setup as interoperabl
 pip install enzymetk
 ```
 
+## For each module run install the first time you're running it
+This will install as a venv where possible and conda where the tools don't allow for venvs.
+See specific tools for info.
+```
+bm = BLAST(id_col, seq_col, label_col)
+bm.install() # by default will create a venv or if needed a conda env
+```
+Note if you want to use your specific environment you can install externally and override the installed venv or conda env e.g.
+```
+bm = BLAST(id_col, seq_col, label_col)
+bm.conda = 'blast_env' # an already installed env on your computer
+bm.venv = None # so it knows to use conda i.e. forces it not to use venv
+```
+
 ### Install only the specific requirements you need (recomended) 
 
 For this clone the repo and then install the requirements for the specific modules you use 

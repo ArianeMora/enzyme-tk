@@ -96,7 +96,11 @@ The steps are the main building blocks of the pipeline. They are responsible for
 
 BLAST is a tool for searching a database of sequences for similar sequences. Here you can either pass a database that you have already created or pass the sequences as part of your dataframe and pass the label column (this needs to have two values: reference and query) reference refers to sequences that you want to search against and query refers to sequences that you want to search for.
 
-Note you need to have installed the BLAST environment.
+Note you can install 2 ways, with a conda env by command line:
+
+```
+enzymetk install_diamond
+```
 
 ```python
 id_col = 'Entry'

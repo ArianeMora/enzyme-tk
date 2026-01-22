@@ -62,8 +62,8 @@ class Step():
           cmd = [f'{self.env_name}/bin/python', 'get-pip.py']
           self.run(cmd)
      
-    
-    def install_conda(self):
+
+    def install_conda(self, env_args=None):
         return
     
     def run(self, cmd: list):

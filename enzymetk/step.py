@@ -38,12 +38,30 @@ class Step():
         self.conda = None
         self.exec = "/bin/bash"
 
+
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:
         """ Execute some shit """ 
         return df
     
-    def install_venv(self):
-        return 
+    def install_venv(self, env_args=None):
+        self.conda = None
+        self.venv = None   
+        """ Install unimol_tools """   
+        cmd = ['uv', 'venv', self.env_name]
+        if env_args:
+            cmd.extend(env_args)
+        self.run(cmd)
+        # Ensure pip is up to date and installed
+        try:
+          cmd = [f'{self.env_name}/bin/python', 'pip', 'install', '--upgrade', 'pip']
+          self.run(cmd)
+        except:
+          # Need to have this for jupyter envs
+          cmd = ['wget', 'https://bootstrap.pypa.io/get-pip.py']
+          self.run(cmd)
+          cmd = [f'{self.env_name}/bin/python', 'get-pip.py']
+          self.run(cmd)
+     
     
     def install_conda(self):
         return

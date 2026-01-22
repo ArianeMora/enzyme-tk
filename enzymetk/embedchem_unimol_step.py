@@ -2,59 +2,39 @@ import pandas as pd
 from tempfile import TemporaryDirectory
 import logging
 import numpy as np
-from unimol_tools import UniMolRepr
 from multiprocessing.dummy import Pool as ThreadPool
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-# pip install unimol_tools
 
 
 class UniMol(Step):
     
     def __init__(self, smiles_col: str, unimol_model = 'unimolv2', 
                  unimol_size = '164m', num_threads = 1,
-                 conda_env_name = 'unimol', venv_name = 'unimol/bin/python'):
+                 env_name = 'enzymetk', venv_name = None):
         self.smiles_col = smiles_col
         self.num_threads = num_threads
-        self.conda = conda_env_name
-        self.venv = venv_name   
-        # single smiles unimol representation
-        clf = UniMolRepr(data_type='molecule', 
-                        remove_hs=False,
-                        model_name= unimol_model or 'unimolv2', # avaliable: unimolv1, unimolv2
-                        model_size= unimol_size or '164m', # work when model_name is unimolv2. avaliable: 84m, 164m, 310m, 570m, 1.1B.
-                        )
-        self.clf = clf
+        self.conda = env_name
+        self.env_name = env_name
+        self.venv = venv_name if venv_name else f'{env_name}/bin/python'
+        self.unimol_model = unimol_model
+        self.unimol_size = unimol_size
         super().__init__()
  
-
-    def install(self):
-        self.conda = None
-        self.venv = None   
-        """ Install unimol_tools """   
-        cmd = ['uv', 'venv', 'unimol', '--python', '3.11']
-        self.run(cmd)
-        # Ensure pip is up to date and installed
+    def install(self, env_args=None):
+        # e.g. env args could by python=='3.1.1.
+        self.install_venv(env_args)
+        # Now the specific
         try:
-          cmd = ['unimol/bin/python', 'pip', 'install', '--upgrade', 'pip']
-          self.run(cmd)
-        except:
-          # Need to have this for jupyter envs
-          cmd = ['wget', 'https://bootstrap.pypa.io/get-pip.py']
-          self.run(cmd)
-          cmd = ['unimol/bin/python', 'get-pip.py']
-          self.run(cmd)
-        try:
-            cmd = ['unimol/bin/pip', 'install', 'unimol_tools']
+            cmd = [f'{self.env_name}/bin/pip', 'install', 'unimol_tools']
             self.run(cmd)
         except Exception as e:
-            cmd = ['unimol/bin/pip3', 'install', 'unimol_tools']
+            cmd = [f'{self.env_name}/bin/pip3', 'install', 'unimol_tools']
             self.run(cmd)
         self.run(cmd)
         # Now set the venv to be the location:
-        self.venv = 'unimol/bin/python'
+        self.venv = f'{self.env_name}/bin/python'
 
     def __execute(self, df: pd.DataFrame) -> pd.DataFrame:
         smiles_list = list(df[self.smiles_col].values)
@@ -70,6 +50,20 @@ class UniMol(Step):
         return df
     
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:
+        try:
+            from unimol_tools import UniMolRepr
+        except ImportError as e:
+            raise ImportError(
+                "UniMolRepr requires unimol-tools. "
+                "Install after initializing class with install()"
+            ) from e
+        # single smiles unimol representation
+        clf = UniMolRepr(data_type='molecule', 
+                        remove_hs=False,
+                        model_name= self.unimol_model or 'unimolv2', # avaliable: unimolv1, unimolv2
+                        model_size= self.unimol_size or '164m', # work when model_name is unimolv2. avaliable: 84m, 164m, 310m, 570m, 1.1B.
+                        )
+        self.clf = clf
         with TemporaryDirectory() as tmp_dir:
             if self.num_threads > 1:
                 data = []

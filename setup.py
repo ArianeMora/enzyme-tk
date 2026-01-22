@@ -50,7 +50,7 @@ setup(name='enzymetk',
           'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
           'Natural Language :: English',
           'Operating System :: OS Independent',
-          'Programming Language :: Python :: 3.8',
+          'Programming Language :: Python :: 3.11',
           'Topic :: Scientific/Engineering :: Bio-Informatics',
       ],
       keywords=['enzymes', 'protein-engineering'],
@@ -61,13 +61,12 @@ setup(name='enzymetk',
               'enzymetk = enzymetk.__main__:main'
           ]
       },
-      install_requires=[
-                        'scikit-learn',
+      install_requires=['scikit-learn',
                         'numpy',
                         'seaborn',
                         'sciutil',
                         'pandas',
                         'biopython'],
-      python_requires='>=3.8',
+      python_requires='>=3.11',
       data_files=[("", ["LICENSE"])]
       )

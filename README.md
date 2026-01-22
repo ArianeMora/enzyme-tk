@@ -267,6 +267,16 @@ df << (CREEP(id_col, reaction_col, CREEP_cache_dir='/disk1/share/software/CREEP/
 
 EmbedESM is a tool for embedding a set of sequences using ESM2.
 
+Either in your own conda env: `pip install esm-fair` or you can run:
+
+```
+id_col = 'Entry'
+seq_col = 'Sequence'
+label_col = 'ActiveSite'
+esm = EmbedESM(id_col, seq_col, extraction_method='mean', tmp_dir='tmp', rep_num=36)
+esm.install() # And follow the instructions to activate the env
+```
+
 ```python
 from enzymetk.embedprotein_esm_step import EmbedESM
 from enzymetk.save_step import Save

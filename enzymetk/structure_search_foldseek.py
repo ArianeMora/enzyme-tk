@@ -1,5 +1,4 @@
 from enzymetk.step import Step
-
 import logging
 import pandas as pd
 import numpy as np

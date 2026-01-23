@@ -2,18 +2,21 @@ from enzymetk.step import Step
 import pandas as pd
 import numpy as np
 from tempfile import TemporaryDirectory
-from rdkit import Chem
-from rdkit import DataStructs
-from rdkit.Chem import rdChemReactions
 import pandas as pd
-import os
-from rdkit.DataStructs import FingerprintSimilarity
-from rdkit.Chem.Fingerprints import FingerprintMols
-import random
-import string
 from tqdm import tqdm
 from multiprocessing.dummy import Pool as ThreadPool
 
+try:
+    from rdkit import Chem
+    from rdkit import DataStructs
+    from rdkit.Chem import rdChemReactions
+    from rdkit.DataStructs import FingerprintSimilarity
+    from rdkit.Chem.Fingerprints import FingerprintMols
+
+except ImportError as e:
+    print("ReactionDist: Needs rdkit package. Install with pip install rdkit.")    
+
+    
 
 class ReactionDist(Step):
     

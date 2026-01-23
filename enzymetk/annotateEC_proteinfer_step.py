@@ -5,7 +5,10 @@ from multiprocessing.dummy import Pool as ThreadPool
 from tempfile import TemporaryDirectory
 import os
 import subprocess
+from enzymetk.step import run_script
+from pathlib import Path    
 
+SCRIPT_DIR = Path(__file__).parent.resolve()
 
 class ProteInfer(Step):
     
@@ -53,6 +56,12 @@ class ProteInfer(Step):
         self.ec3_filter = ec3_filter
         self.ec4_filter = ec4_filter
         
+    def install(self, env_args=None):
+        # Try to automatically install CREEP conda env
+        run_script('install_CREEP.sh', verbose=True)
+        self.CREEP_dir = SCRIPT_DIR.parent.resolve() / 'conda_envs' / 'CREEP'
+        self.CREEP_cache_dir = f'{self.CREEP_dir}/data/'
+
     def __execute(self, data: list) -> np.array:
         df, tmp_dir = data
         # Make sure in the directory of proteinfer

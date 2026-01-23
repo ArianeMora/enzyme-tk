@@ -16,7 +16,6 @@ class ChemBERT(Step):
         self.seq_len_limit = 500
         self.embedding_len = 768
         
-        
     def __execute(self, data: list) -> np.array:
         results = []
         for v in data:

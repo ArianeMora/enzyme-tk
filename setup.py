@@ -65,8 +65,12 @@ setup(name='enzymetk',
                         'numpy',
                         'seaborn',
                         'sciutil',
+                        'tqdm',
                         'pandas',
-                        'biopython'],
+                        'biopython', 
+                        'transformers', 
+                        'torch',
+                        'huggingface_hub'],
       python_requires='>=3.11',
       data_files=[("", ["LICENSE"])]
       )

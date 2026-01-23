@@ -1,15 +1,18 @@
 # ESM 3 script
-from esm.sdk.api import ESMProtein
 from tempfile import TemporaryDirectory
 import torch
 import os
 import pandas as pd
-from esm.models.esm3 import ESM3
-from esm.sdk.api import ESMProtein, SamplingConfig
 from huggingface_hub import login
 from enzymetk.step import Step
 import numpy as np
 from tqdm import tqdm 
+try:
+    from esm.sdk.api import ESMProtein
+    from esm.models.esm3 import ESM3
+    from esm.sdk.api import ESMProtein, SamplingConfig
+except ImportError as e:
+    print("EmbedESM3: Needs esm3 package. Install with: pip install esm.")    
 
 # CUDA setup
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152

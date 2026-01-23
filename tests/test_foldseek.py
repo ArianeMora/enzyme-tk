@@ -107,9 +107,9 @@ pdb_column_name = 'pdbs'
 # foldseek databases PDB pdb tmp 
 reference_database = '/mnt/labs/data/mora/data/pdb_foldseek/pdb'
 fs = FoldSeek(pdb_column_name, reference_database)
-# df = fs.execute(df)
-# print(df)
-# df.to_csv('df.csv')
+df = fs.execute(df)
+print(df)
+df.to_csv('df.csv')
 
 # Try making a database and then running on that one
 id_col = 'Entry'

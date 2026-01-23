@@ -5,11 +5,12 @@ from pathlib import Path
 import numpy as np
 from tqdm import tqdm 
 import os
-import torch
+
 
     
 # First run this: nohup python esm-extract.py esm2_t33_650M_UR50D /disk1/ariane/vscode/degradeo/data/DEHP/uniprot/EC3.1.1_training.fasta /disk1/ariane/vscode/degradeo/data/DEHP/uniprot/encodings --include per_tok & 
 def extract_active_site_embedding(df, id_column, residue_columns, encoding_dir, rep_num=33): 
+    import torch
     """ Expects that the entries for the active site df are saved as the filenames in the encoding dir. """
     combined_tensors = []
     mean_tensors = []
@@ -47,6 +48,7 @@ def extract_active_site_embedding(df, id_column, residue_columns, encoding_dir, 
 
 # First run this: nohup python esm-extract.py esm2_t33_650M_UR50D /disk1/ariane/vscode/degradeo/data/DEHP/uniprot/EC3.1.1_training.fasta /disk1/ariane/vscode/degradeo/data/DEHP/uniprot/encodings --include per_tok & 
 def extract_mean_embedding(df, id_column, encoding_dir, rep_num=33): 
+    import torch
     """ Expects that the entries for the active site df are saved as the filenames in the encoding dir. """
     tensors = []
     count_fail = 0

@@ -27,6 +27,57 @@ bm.conda = 'blast_env' # an already installed env on your computer
 bm.venv = None # so it knows to use conda i.e. forces it not to use venv
 ```
 
+## Modules requiring conda
+
+- CREEP [not tested again]
+- CLEAN [not tested again]
+- ProteInfer [not tested again]
+
+## Modules able to run in venv
+- BLAST [tested with both, see notebook]
+- ChemBERTA [tested with both]
+- Boltz
+- Chai
+- esm2/3 [tested and works]
+- foldseek []
+- ligandmpnn
+- mmseqs
+- msa
+- reaction_similarity 
+- rfdiffusion
+- rxnfp
+- substrate_similarity
+- tree
+- unimol
+
+
+| Module                       | Name          | Description                                                                       | Colab ipynb|
+|------------------------------|---------------|-----------------------------------------------------------------------------------|------------|
+| Metagenomics                 | PoreChop      | Used to filter adapters for nanopore sequences in metagenomics   pipeline.        | y          |
+| Metagenomics                 | Flye          | Used to assemble the metagenomes.                                                 | ?          |
+| Metagenomics                 | Prokka        | Annotation of genes within the genome.                                            | ?          |
+| Function prediction          | Proteinfer    | Annotation of genes to function (GO or EC class) using ML.                        | 33          |
+| Function prediction          | CLEAN         | Annotation of genes to EC class using ML.                                         | 11          |
+| Function prediction          | CREEP         | Annotation of genes to EC class using ML.                                         | 13          |
+| Function prediction          | Func-e        | Annotation of genes to reaction using ML.                                         | This study. |
+| Function prediction          | Squidly       | Annotation of catalytic residues using ML.                                        | 36          |
+| Embedding generation         | ESM2 & 3      | Conversion of amino acid sequence to a numerical embedding   using a PLM.         | 46,47       |
+| Embedding generation         | RxnFP         | Conversion of reaction smiles to a numerical embedding using a   language model.  | 48          |
+| Embedding generation         | Selformer     | Conversion of reaction selfies to a numerical embedding using   a language model. | 49          |
+| Embedding generation         | Uni-mol       | Conversion of molecule smiles to a numerical embedding using a   language model.  | 50          |
+| Embedding generation         | ChemBERTa2    | Conversion of reaction smiles to a numerical embedding using a   language model.  | 51          |
+| Docking                      | Chai          | Diffusion based folding of a protein and ligand.                                  | 42          |
+| Docking                      | Boltz         | Diffusion based folding of a protein and ligand.                                  | 52          |
+| Similarity                   | Diamond       | Sequence similarity calculation   using basic local alignment search.             | 53          |
+| Similarity                   | Foldseek      | Fast structure similarity search.                                                 | 54          |
+| Similarity                   | MMseqs        | Fast sequence clustering.                                                         | 55          |
+| Docking                      | StructureZyme | Alignment and calculation of structure metrics.                                   | 56          |
+| Oligo design                 | Oligopoolio   | Calculation of oligo fragments for gene assembly.                                 | This study. |
+| Sequencing                   | LevSeq        | Sequence verification of protein variants.                                        | 34          |
+| MSA generation               | ClustalOmega  | Creation of multiple sequence alignments (MSA).                                   | 57          |
+| Phylogenetic tree generation | FastTree      | Creation of multiple phylogenetic trees.                                          | 58          |
+
+
 ### Install only the specific requirements you need (recomended) 
 
 For this clone the repo and then install the requirements for the specific modules you use 

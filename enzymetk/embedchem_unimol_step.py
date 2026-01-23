@@ -2,6 +2,8 @@ import pandas as pd
 from tempfile import TemporaryDirectory
 import logging
 import numpy as np
+from enzymetk.step import Step
+
 from multiprocessing.dummy import Pool as ThreadPool
 
 logger = logging.getLogger(__name__)
@@ -13,6 +15,7 @@ class UniMol(Step):
     def __init__(self, smiles_col: str, unimol_model = 'unimolv2', 
                  unimol_size = '164m', num_threads = 1,
                  env_name = 'enzymetk', venv_name = None):
+        super().__init__()
         self.smiles_col = smiles_col
         self.num_threads = num_threads
         self.conda = env_name
@@ -20,7 +23,7 @@ class UniMol(Step):
         self.venv = venv_name if venv_name else f'{env_name}/bin/python'
         self.unimol_model = unimol_model
         self.unimol_size = unimol_size
-        super().__init__()
+        
  
     def install(self, env_args=None):
         # e.g. env args could by python=='3.1.1.

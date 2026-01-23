@@ -1,11 +1,17 @@
 from enzymetk.step import Step
 import pandas as pd
-from docko.docko import *
+
 import logging
 import numpy as np
 import os
 from pathlib import Path
 from multiprocessing.dummy import Pool as ThreadPool
+
+
+try:
+    from docko.docko import *
+except ImportError as e:
+    print("Vina: Needs docko package. Install with: pip install docko.")    
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -14,7 +20,8 @@ logger.setLevel(logging.INFO)
 class Vina(Step):
     
     def __init__(self, id_col: str, structure_col: str, sequence_col: str, 
-                 substrate_col: str, substrate_name_col: str, active_site_col: str, output_dir: str, num_threads: int):
+                 substrate_col: str, substrate_name_col: str, active_site_col: str, output_dir: str, num_threads: 1, 
+                 self.venv_name = 'enzymetk', env_name = None):
         print('Expects active site residues as a string separated by |. Zero indexed.')
         self.id_col = id_col
         self.structure_col = structure_col
@@ -24,6 +31,20 @@ class Vina(Step):
         self.active_site_col = active_site_col  # Expects active site residues as a string separated by |
         self.output_dir = Path( output_dir) or None
         self.num_threads = num_threads or 1
+
+    def install(self, env_args=None):
+        # e.g. env args could by python=='3.1.1.
+        self.install_venv(env_args)
+        # Now the specific
+        try:
+            cmd = [f'{self.env_name}/bin/pip', 'install', 'docko']
+            self.run(cmd)
+        except Exception as e:
+            cmd = [f'{self.env_name}/bin/pip3', 'install', 'docko']
+            self.run(cmd)
+        self.run(cmd)
+        # Now set the venv to be the location:
+        self.venv = f'{self.env_name}/bin/python'
 
     def __execute(self, df: pd.DataFrame) -> pd.DataFrame:
         output_filenames = []

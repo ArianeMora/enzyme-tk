@@ -5,12 +5,40 @@ import timeit
 import logging
 import subprocess
 import os
+import typer
+from pathlib import Path
+SCRIPT_DIR = Path(__file__).parent.resolve()
 
 u = SciUtil()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
  
-
+def run_script(script_name: str, verbose: bool = True) -> int:
+    """Run a shell script from the conda_envs directory."""
+    script_path = Path(f'{SCRIPT_DIR}/{script_name}')
+    
+    if not script_path.exists():
+        typer.secho(f"Error: Script {script_name} not found at {script_path}", fg=typer.colors.RED)
+        raise typer.Exit(1)
+    
+    typer.secho(f"Running {script_name}...", fg=typer.colors.BLUE)
+    
+    try:
+        result = subprocess.run(
+            ["bash", str(script_path)],
+            cwd=str(SCRIPT_DIR),
+            check=True,
+            capture_output=not verbose,
+            text=True,
+        )
+        typer.secho(f"✓ {script_name} completed successfully", fg=typer.colors.GREEN)
+        return 0
+    except subprocess.CalledProcessError as e:
+        typer.secho(f"✗ {script_name} failed with exit code {e.returncode}", fg=typer.colors.RED)
+        if not verbose and e.stderr:
+            typer.echo(e.stderr)
+        raise typer.Exit(1)
+    
 class Pipeline():
     
     def __init__(self, *steps: Step):

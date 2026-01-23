@@ -1,16 +1,10 @@
-#./foldseek easy-search /home/ariane/degradeo/data/pipeline/p1_predict_activity/p1b_encode_protein/e1_esm/chai/Q0HLQ7/chai/Q0HLQ7_0.cif /home/ariane/degradeo/data/pipeline/p1_predict_activity/p1b_encode_protein/e1_esm/chai/Q0HLQ7/chai/Q0HLQ7_1.cif pdb test_aln.fasta tmp
-"""
-Install clean and then you need to activate the environment and install and run via that. 
-
-Honestly it's a bit hacky the way they do it, not bothered to change things so have to save the data to their
-repo and then copy it out of it.
-"""
 from enzymetk.step import Step
 
 import logging
 import pandas as pd
 import numpy as np
 from tempfile import TemporaryDirectory
+import subprocess
 import random
 import string
 from tqdm import tqdm 

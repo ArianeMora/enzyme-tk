@@ -9,6 +9,7 @@ import subprocess
 import random
 import string
 from tqdm import tqdm 
+from enzymetk.step import Step
 
 
 logger = logging.getLogger(__name__)

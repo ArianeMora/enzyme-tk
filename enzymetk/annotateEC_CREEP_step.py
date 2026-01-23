@@ -5,9 +5,12 @@ import subprocess
 import logging
 import numpy as np
 import os
+from step import run_script
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+SCRIPT_DIR = Path(__file__).parent.resolve()
 
 """
 import os
@@ -38,9 +41,14 @@ class CREEP(Step):
         self.args_extract = args_extract
         self.args_retrieval = args_retrieval
             
+    def install(self, env_args=None):
+        # Try to automatically install CREEP conda env
+        run_script('install_CREEP.sh', verbose=True)
+        self.CREEP_dir = SCRIPT_DIR.parent.resolve() / 'conda_envs' / 'CREEP'
+        self.CREEP_cache_dir = f'{self.CREEP_dir}/data/'
+
     def __execute(self, df: pd.DataFrame, tmp_dir: str):
-        tmp_dir = '/disk1/ariane/vscode/degradeo/pipeline/tmp/'
-        input_filename = f'{tmp_dir}/creepasjkdkajshdkja.csv'
+        input_filename = f'{tmp_dir}/input.csv'
         df.to_csv(input_filename, index=False)
         cmd = ['conda', 'run', '-n', self.env_name, 'python', f'{self.CREEP_dir}scripts/step_02_extract_CREEP.py', '--pretrained_folder', 
                                  f'{self.CREEP_cache_dir}output/easy_split', 

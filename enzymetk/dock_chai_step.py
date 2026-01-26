@@ -16,7 +16,7 @@ logger.setLevel(logging.INFO)
 class Chai(Step):
     
     def __init__(self, id_col: str, seq_col: str, substrate_col: str, cofactor_col: str, output_dir: str, 
-                num_threads: 1, self.venv_name = 'enzymetk', env_name = None):
+                num_threads: 1, venv_name = 'enzymetk', env_name = None):
         super().__init__()
         self.id_col = id_col
         self.seq_col = seq_col

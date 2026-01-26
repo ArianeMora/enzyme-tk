@@ -21,7 +21,7 @@ class Vina(Step):
     
     def __init__(self, id_col: str, structure_col: str, sequence_col: str, 
                  substrate_col: str, substrate_name_col: str, active_site_col: str, output_dir: str, num_threads: 1, 
-                 self.venv_name = 'enzymetk', env_name = None):
+                 venv_name = 'enzymetk', env_name = None):
         print('Expects active site residues as a string separated by |. Zero indexed.')
         self.id_col = id_col
         self.structure_col = structure_col

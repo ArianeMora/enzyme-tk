@@ -5,7 +5,7 @@ import subprocess
 import logging
 import numpy as np
 import os
-from step import run_script
+from enzymetk.step import run_script
 from pathlib import Path
 
 logger = logging.getLogger(__name__)

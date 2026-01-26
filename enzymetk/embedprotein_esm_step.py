@@ -6,7 +6,6 @@ import numpy as np
 from tqdm import tqdm 
 import os
 
-
     
 # First run this: nohup python esm-extract.py esm2_t33_650M_UR50D /disk1/ariane/vscode/degradeo/data/DEHP/uniprot/EC3.1.1_training.fasta /disk1/ariane/vscode/degradeo/data/DEHP/uniprot/encodings --include per_tok & 
 def extract_active_site_embedding(df, id_column, residue_columns, encoding_dir, rep_num=33): 
@@ -126,6 +125,7 @@ class EmbedESM(Step):
         return df
     
     def __run_esm(self, model_location, fasta_file, output_dir, repr_layers=[-1], include_features=[], toks_per_batch=4096, truncation_seq_length=1024, nogpu=False):
+        import torch
         from esm import Alphabet, FastaBatchedDataset, ProteinBertModel, pretrained, MSATransformer
         model, alphabet = pretrained.load_model_and_alphabet(model_location)
         model.eval()

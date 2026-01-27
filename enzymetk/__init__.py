@@ -22,7 +22,7 @@ Date: March 2025
 __title__ = 'enzymetk'
 __description__ = 'Toolkit for enzymes and what not'
 __url__ = 'https://github.com/arianemora/enzyme-tk/'
-__version__ = '0.0.6'
+__version__ = '0.0.7'
 __author__ = 'Ariane Mora'
 __author_email__ = 'ariane.n.mora@gmail.com'
 __license__ = 'GPL3'

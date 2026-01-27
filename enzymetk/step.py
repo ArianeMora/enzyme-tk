@@ -84,11 +84,15 @@ class Step():
           cmd = [f'{self.env_name}/bin/python', 'pip', 'install', '--upgrade', 'pip']
           self.run(cmd)
         except:
-          # Need to have this for jupyter envs
-          cmd = ['wget', 'https://bootstrap.pypa.io/get-pip.py']
-          self.run(cmd)
-          cmd = [f'{self.env_name}/bin/python', 'get-pip.py']
-          self.run(cmd)
+            try:
+                # Need to have this for jupyter envs
+                cmd = ['wget', 'https://bootstrap.pypa.io/get-pip.py']
+                self.run(cmd)
+                cmd = [f'{self.env_name}/bin/python', 'get-pip.py']
+                self.run(cmd)
+            except:
+                print('WARNING, you may not have pip in your virtual env. Manually install.')
+                pass
      
 
     def install_conda(self, env_args=None):

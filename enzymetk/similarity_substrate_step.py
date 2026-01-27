@@ -20,7 +20,6 @@ try:
 except ImportError as e:
     print("SubstrateDist: Needs rdkit package. Install with pip install rdkit.")    
 
-
 class SubstrateDist(Step):
     
     def __init__(self, id_column_name: str, smiles_column_name: str, smiles_string: str, num_threads=1):
@@ -44,11 +43,12 @@ class SubstrateDist(Step):
             mol_ = Chem.MolFromSmiles(smiles)
             fps = mfpgen.GetFingerprint(mol_)
             rows.append([smile_id, 
-                         smiles, 
+                         self.smiles_string,
+                         smiles,
                          DataStructs.TanimotoSimilarity(fps, rxn_fp), 
                          DataStructs.RusselSimilarity(fps, rxn_fp), 
                          DataStructs.CosineSimilarity(fps, rxn_fp)])
-        distance_df = pd.DataFrame(rows, columns=[self.id_column_name, 'TargetSmiles', 'TanimotoSimilarity', 'RusselSimilarity', 'CosineSimilarity'])
+        distance_df = pd.DataFrame(rows, columns=[self.id_column_name, 'QuerySmiles', self.smiles_column_name, 'TanimotoSimilarity', 'RusselSimilarity', 'CosineSimilarity'])
         return distance_df
         
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:

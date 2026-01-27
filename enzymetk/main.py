@@ -20,7 +20,7 @@ app = typer.Typer(
 )
 
 # Get the directory where this script is located
-SCRIPT_DIR = Path("/mnt/nfs/vol8t/home/amora/code/enzyme-tk/enzymetk/conda_envs") #Path(__file__).parent.resolve() #dirname(__file__)
+SCRIPT_DIR = Path(__file__).parent.resolve() #dirname(__file__)
 
 #Path(__file__).parent.resolve()
 

@@ -34,21 +34,24 @@ bm.venv = None # so it knows to use conda i.e. forces it not to use venv
 - ProteInfer [not tested again]
 
 ## Modules able to run in venv
-- BLAST [tested with both, see notebook]
-- ChemBERTA [tested with both]
+- BLAST [cpu, tested with both, see notebook]
+- ChemBERTA [cpu, colab]
 - Boltz
 - Chai
-- esm2/3 [tested and works]
-- foldseek []
+- esm2/3 [cpu, see notebook]
+- foldseek [tested and works]
 - ligandmpnn
-- mmseqs
-- msa
-- reaction_similarity 
-- rfdiffusion
-- rxnfp
-- substrate_similarity
+- mmseqs [can get working...]
+- msa []
+- reaction_similarity [good, cpu]
+- rxnfp [needs specific python version so not easy in colab] hence install is with `enzymetk install rxnfp` requires conda
+- substrate_similarity [good, cpu]
 - tree
-- unimol
+- unimol [good, cpu]
+
+pipelines: reads --> poreChop --> Flye --> Prokka --> Squidly --> Foldseek --> Boltz --> Chai
+pipelines: seqs --> BLAST --> Proteinfer --> Foldseek -->  MMseqs --> ClustalOmega --> FastTree
+pipelines: reactions --> rxnFP --> selformer --> uniMol --> chemBERTa2 --> RDkit reaction similarity
 
 
 | Module                       | Name          | Description                                                                       | Colab ipynb|

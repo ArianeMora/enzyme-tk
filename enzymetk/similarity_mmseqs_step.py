@@ -28,7 +28,8 @@ def process_clustering(filename, df, id_column_name):
 
 class MMseqs(Step):
     
-    def __init__(self, id_column_name: str, seq_column_name: str, method='search',reference_database: str = None, tmp_dir: str = None, args: list = None):
+    def __init__(self, id_column_name: str, seq_column_name: str, method='search',reference_database: str = None, 
+                 tmp_dir: str = None, args: list = None):
         self.seq_column_name = seq_column_name
         self.id_column_name = id_column_name
         self.reference_database = reference_database # pdb should be the default

@@ -2,8 +2,9 @@
 # CARE processing
 conda create -n CARE_processing python=3.8 -y
 # Doesn't like working with conda init
-CONDA_BASE=$(conda info --base)
-source $CONDA_BASE/etc/profile.d/conda.sh
+# CONDA_BASE=$(conda info --base)
+# source $CONDA_BASE/etc/profile.d/conda.sh
+
 conda activate CARE_processing
 conda install -c mamba-forge -c bioconda mmseqs2 -y
 conda install -c rdkit rdkit=2020.03.3 -y

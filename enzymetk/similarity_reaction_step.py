@@ -46,7 +46,7 @@ class ReactionDist(Step):
                          DataStructs.TanimotoSimilarity(fps, rxn_fp), 
                          DataStructs.RusselSimilarity(fps, rxn_fp), 
                          DataStructs.CosineSimilarity(fps, rxn_fp)])
-        distance_df = pd.DataFrame(rows, columns=[self.id_column_name, 'QuerySmiles', 'TargetSmiles', 'TanimotoSimilarity', 'RusselSimilarity', 'CosineSimilarity'])
+        distance_df = pd.DataFrame(rows, columns=[self.id_column_name, 'QuerySmiles', self.smiles_column_name, 'TanimotoSimilarity', 'RusselSimilarity', 'CosineSimilarity'])
         return distance_df
         
     def execute(self, df: pd.DataFrame) -> pd.DataFrame:

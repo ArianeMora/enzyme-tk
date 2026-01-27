@@ -16,10 +16,28 @@ logger.setLevel(logging.INFO)
     
 class RxnFP(Step):
     
-    def __init__(self, smiles_col: str, num_threads: int, env_name: str = 'rxnfp'):
+    def __init__(self, smiles_col: str, num_threads: 1, 
+                 env_name = 'rxnfp', venv_name = None):
+        super().__init__()
         self.value_col = smiles_col
         self.num_threads = num_threads or 1
+        self.conda = env_name
         self.env_name = env_name
+        self.venv = venv_name if venv_name else f'{env_name}/bin/python'
+
+    def install(self, env_args=['--python', '3.8']):
+        # e.g. env args could by python=='3.1.1.
+        self.install_conda(env_args=env_args)
+        # Now the specific
+        try:
+            cmd = [f'pip', 'install', 'rxnfp', 'rdkit=2020.03.3', 'tmap', 'numpy==1.23', 'sciutil']
+            self.run(cmd)
+        except Exception as e:
+            cmd = [f'pip', 'install', 'rxnfp', 'rdkit=2020.03.3', 'tmap', 'numpy==1.23', 'sciutil']
+            self.run(cmd)
+        self.run(cmd)
+        # Now set the venv to be the location:
+        self.conda = f'{self.env_name}'
 
     def __execute(self, df: pd.DataFrame, tmp_dir: str) -> pd.DataFrame:
         tmp_label = ''.join(random.choices(string.ascii_letters + string.digits, k=10))

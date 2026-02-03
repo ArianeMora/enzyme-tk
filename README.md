@@ -2,6 +2,9 @@
 
 Enzyme-tk is a collection of tools for enzyme engineering, setup as interoperable modules that act on dataframes. These modules are designed to be imported into pipelines for specific function. For this reason, `steps` as each module is called (e.g. finding similar proteins with `BLAST` would be considered a step) are designed to be as light as possible. An example of a pipeline is the [annotate-e](https://github.com/ArianeMora/annotate-e)  ` pipeline, this acts to annotate a fasta with an ensemble of methods (each is designated as an Enzyme-tk step). 
 
+### Moving to a new home: 
+
+Since I started at AITHYRA this is migrating to a new home at [moragroup/enzyme-tk](https://github.com/moragroup/enzyme-tk/wiki/Installations) so will be maintaied there.
 
 **If you have any issues installing, let me know - this has been tested only on Linux/Ubuntu. Please post an issue!**
 
@@ -10,7 +13,7 @@ Enzyme-tk is a collection of tools for enzyme engineering, setup as interoperabl
 ## Install base package to import modules
 
 ```bash
-pip install enzymetk
+pip install enzymetk==0.0.7
 ```
 
 ## For each module run install the first time you're running it
@@ -27,59 +30,6 @@ bm.conda = 'blast_env' # an already installed env on your computer
 bm.venv = None # so it knows to use conda i.e. forces it not to use venv
 ```
 
-## Modules requiring conda
-
-- CREEP [not tested again]
-- CLEAN [not tested again]
-- ProteInfer [not tested again]
-
-## Modules able to run in venv
-- BLAST [cpu, tested with both, see notebook]
-- ChemBERTA [cpu, colab]
-- Boltz
-- Chai
-- esm2/3 [cpu, see notebook]
-- foldseek [tested and works]
-- ligandmpnn
-- mmseqs [can get working...]
-- msa []
-- reaction_similarity [good, cpu]
-- rxnfp [needs specific python version so not easy in colab] hence install is with `enzymetk install rxnfp` requires conda
-- substrate_similarity [good, cpu]
-- tree
-- unimol [good, cpu]
-
-pipelines: reads --> poreChop --> Flye --> Prokka --> Squidly --> Foldseek --> Boltz --> Chai
-pipelines: seqs --> BLAST --> Proteinfer --> Foldseek -->  MMseqs --> ClustalOmega --> FastTree
-pipelines: reactions --> rxnFP --> selformer --> uniMol --> chemBERTa2 --> RDkit reaction similarity
-
-
-| Module                       | Name          | Description                                                                       | Colab ipynb|
-|------------------------------|---------------|-----------------------------------------------------------------------------------|------------|
-| Metagenomics                 | PoreChop      | Used to filter adapters for nanopore sequences in metagenomics   pipeline.        | y          |
-| Metagenomics                 | Flye          | Used to assemble the metagenomes.                                                 | ?          |
-| Metagenomics                 | Prokka        | Annotation of genes within the genome.                                            | ?          |
-| Function prediction          | Proteinfer    | Annotation of genes to function (GO or EC class) using ML.                        | 33          |
-| Function prediction          | CLEAN         | Annotation of genes to EC class using ML.                                         | 11          |
-| Function prediction          | CREEP         | Annotation of genes to EC class using ML.                                         | 13          |
-| Function prediction          | Func-e        | Annotation of genes to reaction using ML.                                         | This study. |
-| Function prediction          | Squidly       | Annotation of catalytic residues using ML.                                        | 36          |
-| Embedding generation         | ESM2 & 3      | Conversion of amino acid sequence to a numerical embedding   using a PLM.         | 46,47       |
-| Embedding generation         | RxnFP         | Conversion of reaction smiles to a numerical embedding using a   language model.  | 48          |
-| Embedding generation         | Selformer     | Conversion of reaction selfies to a numerical embedding using   a language model. | 49          |
-| Embedding generation         | Uni-mol       | Conversion of molecule smiles to a numerical embedding using a   language model.  | 50          |
-| Embedding generation         | ChemBERTa2    | Conversion of reaction smiles to a numerical embedding using a   language model.  | 51          |
-| Docking                      | Chai          | Diffusion based folding of a protein and ligand.                                  | 42          |
-| Docking                      | Boltz         | Diffusion based folding of a protein and ligand.                                  | 52          |
-| Similarity                   | Diamond       | Sequence similarity calculation   using basic local alignment search.             | 53          |
-| Similarity                   | Foldseek      | Fast structure similarity search.                                                 | 54          |
-| Similarity                   | MMseqs        | Fast sequence clustering.                                                         | 55          |
-| Docking                      | StructureZyme | Alignment and calculation of structure metrics.                                   | 56          |
-| Oligo design                 | Oligopoolio   | Calculation of oligo fragments for gene assembly.                                 | This study. |
-| Sequencing                   | LevSeq        | Sequence verification of protein variants.                                        | 34          |
-| MSA generation               | ClustalOmega  | Creation of multiple sequence alignments (MSA).                                   | 57          |
-| Phylogenetic tree generation | FastTree      | Creation of multiple phylogenetic trees.                                          | 58          |
-
 
 ### Install only the specific requirements you need (recomended) 
 
@@ -90,7 +40,7 @@ cd enzymetk/conda_envs/ # would recommend looking at thes
 # e.g. to install all from within that folder you would do
 source install_all.sh
 ```
-
+For more extensive installation instructions check out the [wiki](https://github.com/moragroup/enzyme-tk/wiki/Installations).
 ## Usage
 
 If you have any issues at all just email me using my caltech email: `amora at caltech . edu`

@@ -25,6 +25,7 @@ If you want to try a colab notebook here is an example: ([colab](https://github.
 ```bash
 conda create --name enzymetk python==3.10 -y
 # Install torch for your specific cuda version
+conda activate enzymetk
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu130
 pip install enzymetk==0.0.7
 ```
